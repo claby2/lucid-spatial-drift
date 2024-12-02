@@ -1,3 +1,3 @@
-# Projects 5 & 6: Lights, Camera & Action!
+# Lucid Spatial Drift
 
-All project handouts can be found [here](https://cs1230.graphics/projects).
+Final project for Brown's [CS1230](https://cs1230.graphics).
