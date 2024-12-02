@@ -4,6 +4,7 @@
 #include "utils/debug.h"
 #include "utils/sceneparser.h"
 #include "utils/shaderloader.h"
+#include "utils/worldgenerator.h"
 #include <QCoreApplication>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -24,7 +25,11 @@ Realtime::Realtime(QWidget *parent) : QOpenGLWidget(parent) {
   m_keyMap[Qt::Key_Space] = false;
 
   m_renderData = RenderData();
+
   m_camera = Camera();
+
+  WorldGenerator::generate(m_renderData);
+  m_camera.setData(m_renderData.cameraData);
 }
 
 void Realtime::finish() {
@@ -268,21 +273,19 @@ void Realtime::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void Realtime::mouseMoveEvent(QMouseEvent *event) {
-  if (m_mouseDown) {
-    int posX = event->position().x();
-    int posY = event->position().y();
-    int deltaX = posX - m_prev_mouse_pos.x;
-    int deltaY = posY - m_prev_mouse_pos.y;
-    m_prev_mouse_pos = glm::vec2(posX, posY);
+  int posX = event->position().x();
+  int posY = event->position().y();
+  int deltaX = posX - m_prev_mouse_pos.x;
+  int deltaY = posY - m_prev_mouse_pos.y;
+  m_prev_mouse_pos = glm::vec2(posX, posY);
 
-    const float speed = 0.005f;
+  const float speed = 0.005f;
 
-    m_camera.rotate(-deltaX * speed, glm::vec3(0, 1, 0));
-    m_camera.rotate(deltaY * speed,
-                    glm::cross(m_camera.getLook(), m_camera.getUp()));
+  m_camera.rotate(-deltaX * speed, glm::vec3(0, 1, 0));
+  m_camera.rotate(-deltaY * speed,
+                  glm::cross(m_camera.getLook(), m_camera.getUp()));
 
-    update();
-  }
+  update();
 }
 
 void Realtime::timerEvent(QTimerEvent *event) {

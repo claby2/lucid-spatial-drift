@@ -4,10 +4,10 @@
 #include <string>
 
 struct Settings {
-  int shapeParameter1 = 1;
-  int shapeParameter2 = 1;
-  float nearPlane = 1;
-  float farPlane = 1;
+  int shapeParameter1 = 5;
+  int shapeParameter2 = 5;
+  float nearPlane = 0.1f;
+  float farPlane = 100.0f;
   bool perPixelFilter = false;
   bool kernelBasedFilter = false;
 };

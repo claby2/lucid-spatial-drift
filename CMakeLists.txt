@@ -35,6 +35,7 @@ add_executable(${PROJECT_NAME}
     src/utils/camera.cpp
     src/utils/objectmanager.cpp
     src/utils/postprocessor.cpp
+    src/utils/worldgenerator.cpp
     src/shapes/shape.cpp
     src/shapes/sphere.cpp
     src/shapes/cube.cpp
@@ -53,6 +54,7 @@ add_executable(${PROJECT_NAME}
     src/utils/objectmanager.h
     src/utils/debug.h
     src/utils/postprocessor.h
+    src/utils/worldgenerator.h
     src/shapes/shape.h
     src/shapes/sphere.h
     src/shapes/cube.h

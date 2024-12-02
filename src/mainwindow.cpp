@@ -19,6 +19,8 @@ void MainWindow::initialize() {
   hLayout->addLayout(vLayout);
   hLayout->addWidget(aspectRatioWidget, 1);
   this->setLayout(hLayout);
+
+  realtime->settingsChanged(); // THIS IS IMPORTANT
 }
 
 void MainWindow::finish() {
