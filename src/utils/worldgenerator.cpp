@@ -1,6 +1,7 @@
 #include "worldgenerator.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
 void WorldGenerator::generate(RenderData &renderData) {
   renderData = RenderData{};
@@ -48,5 +49,13 @@ void WorldGenerator::generate(RenderData &renderData) {
                                   },
                           },
                       .ctm = ctm};
+  renderData.shapes.push_back(cube);
+
+  cube.ctm = glm::translate(ctm, glm::vec3(0.0f, 1.0f, 0.0));
+  renderData.shapes.push_back(cube);
+  cube.ctm = glm::translate(ctm, glm::vec3(0.0f, -1.0f, 0.0));
+  renderData.shapes.push_back(cube);
+
+  cube.ctm = glm::translate(ctm, glm::vec3(0.0f, -1.0f, 1.0));
   renderData.shapes.push_back(cube);
 }
