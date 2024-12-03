@@ -6,7 +6,30 @@
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 
-#define WORLD_DIMENSION 30
+#define WORLD_DIMENSION 96
+#define ITERATIONS 20
+
+int countNeighbors(const std::vector<bool> &worldData, int x, int y, int z) {
+  int count = 0;
+  for (int dx = -1; dx <= 1; dx++) {
+    for (int dy = -1; dy <= 1; dy++) {
+      for (int dz = -1; dz <= 1; dz++) {
+        if (dx == 0 && dy == 0 && dz == 0)
+          continue;
+        int nx = x + dx;
+        int ny = y + dy;
+        int nz = z + dz;
+        if (nx < 0 || nx >= WORLD_DIMENSION || ny < 0 ||
+            ny >= WORLD_DIMENSION || nz < 0 || nz >= WORLD_DIMENSION)
+          continue;
+        if (worldData[nx + ny * WORLD_DIMENSION +
+                      nz * WORLD_DIMENSION * WORLD_DIMENSION])
+          count++;
+      }
+    }
+  }
+  return count;
+}
 
 // Generate a world of size WORLD_DIMENSION x WORLD_DIMENSION x WORLD_DIMENSION
 // True means there is a block, false means there is not
@@ -16,14 +39,38 @@ std::vector<bool> generateWorldData() {
 
   std::srand(std::time(0));
 
-  int randomNum = std::rand() % 2;
-  for (int i = 0; i < WORLD_DIMENSION; i++) {
-    for (int j = 0; j < WORLD_DIMENSION; j++) {
-      for (int k = 0; k < WORLD_DIMENSION; k++) {
+  // Randomly generate world
+  for (int x = 0; x < WORLD_DIMENSION; x++) {
+    for (int y = 0; y < WORLD_DIMENSION; y++) {
+      for (int z = 0; z < WORLD_DIMENSION; z++) {
         res.push_back(std::rand() % 2 == 0);
       }
     }
   }
+
+  for (int i = 0; i < ITERATIONS; i++) {
+    std::vector<bool> newRes = res;
+    for (int x = 0; x < WORLD_DIMENSION; x++) {
+      for (int y = 0; y < WORLD_DIMENSION; y++) {
+        for (int z = 0; z < WORLD_DIMENSION; z++) {
+          int neighbors = countNeighbors(res, x, y, z);
+          int index =
+              x + y * WORLD_DIMENSION + z * WORLD_DIMENSION * WORLD_DIMENSION;
+          if (res[index]) {
+            if (neighbors < 13) {
+              newRes[index] = false;
+            }
+          } else {
+            if (neighbors >= 14 && neighbors <= 19) {
+              newRes[index] = true;
+            }
+          }
+        }
+      }
+    }
+    res = newRes;
+  }
+
   return res;
 }
 
@@ -58,7 +105,7 @@ void WorldGenerator::makeTile(glm::vec3 topLeft, glm::vec3 topRight,
 
 void WorldGenerator::makeFace(glm::vec3 topLeft, glm::vec3 topRight,
                               glm::vec3 bottomLeft, glm::vec3 bottomRight) {
-  const float m_param1 = 5.0f;
+  const float m_param1 = 1.0f;
   float size = 1.0f / m_param1;
 
   glm::vec3 colDelta = (topRight - topLeft) * size;
