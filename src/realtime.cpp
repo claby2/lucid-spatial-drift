@@ -337,7 +337,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
   float deltaTime = elapsedms * 0.001f;
   m_elapsedTimer.restart();
 
-  const float speed = 5.0f;
+  const float speed = 30.0f;
 
   float factor = speed * deltaTime;
   glm::vec3 look = glm::normalize(m_camera.getLook());

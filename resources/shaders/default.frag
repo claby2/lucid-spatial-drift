@@ -76,7 +76,7 @@ void main() {
     fragColor = vec4(0.0, 0.0, 0.0, 1.0);
 
     // Ambient
-    fragColor += vec4(globalData.ka * vec3(material.cAmbient), 0.0);
+    fragColor += vec4(globalData.ka * (worldSpacePosition / 96.0), 0.0);
 
     for (int i = 0; i < lightCount; i++) {
         Light light = lights[i];
