@@ -21,6 +21,7 @@
 #include "utils/camera.h"
 #include "utils/objectmanager.h"
 #include "utils/postprocessor.h"
+#include "utils/worldgenerator.h"
 
 class Realtime : public QOpenGLWidget {
 public:
@@ -69,6 +70,8 @@ private:
   Cube m_cube;
   Cylinder m_cylinder;
   Sphere m_sphere;
+
+  WorldGenerator m_worldGenerator;
 
   GLuint m_defaultShader;
 

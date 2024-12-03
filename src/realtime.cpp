@@ -12,6 +12,38 @@
 
 #define MAX_LIGHTS 8
 
+// Set up global data, camera data, and lights
+void initializeRenderData(RenderData &renderData) {
+  renderData = RenderData{};
+
+  // Global Data
+  renderData.globalData = SceneGlobalData{
+      .ka = 0.5f,
+      .kd = 0.5f,
+      .ks = 0.5f,
+      .kt = 0.0f // unused
+  };
+
+  // Camera Data
+  glm::vec3 pos = glm::vec3(3.0f);
+  glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+  float heightAngle = 30.0f;
+  renderData.cameraData = SceneCameraData{
+      .pos = glm::vec4(pos, 1.0f),
+      .look = -glm::vec4(pos, 0.0f),
+      .up = glm::vec4(up, 0.0f),
+      .heightAngle = glm::radians(heightAngle),
+  };
+
+  // Lights
+  SceneLightData directionalLight = SceneLightData{
+      .type = LightType::LIGHT_DIRECTIONAL,
+      .color = glm::vec4(1.0f),
+      .dir = glm::vec4(-3.0f, -2.0f, -1.0f, 0.0f),
+  };
+  renderData.lights.push_back(directionalLight);
+}
+
 Realtime::Realtime(QWidget *parent) : QOpenGLWidget(parent) {
   m_prev_mouse_pos = glm::vec2(size().width() / 2, size().height() / 2);
   setMouseTracking(true);
@@ -28,7 +60,7 @@ Realtime::Realtime(QWidget *parent) : QOpenGLWidget(parent) {
 
   m_camera = Camera();
 
-  WorldGenerator::generate(m_renderData);
+  initializeRenderData(m_renderData);
   m_camera.setData(m_renderData.cameraData);
 }
 
@@ -72,6 +104,10 @@ void Realtime::initializeGL() {
   m_cube.initialize();
   m_cylinder.initialize();
   m_sphere.initialize();
+
+  m_worldGenerator = WorldGenerator();
+  m_worldGenerator.initialize();
+  m_worldGenerator.generate();
 
   m_postProcessor = PostProcessor();
   m_postProcessor.initialize(size().width() * m_devicePixelRatio,
@@ -178,9 +214,8 @@ void Realtime::paintGL() {
     bindVbo();
     m_settingsChanged = false;
   }
-
-  m_postProcessor.bindFramebuffer();
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  /*m_postProcessor.bindFramebuffer();*/
+  /*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
 
   glUseProgram(m_defaultShader);
 
@@ -211,11 +246,18 @@ void Realtime::paintGL() {
     glDrawArrays(GL_TRIANGLES, 0, shape->getVertexCount());
     shape->unbindVao();
   }
+
+  m_worldGenerator.bindVao();
+  loadShapeData(m_worldGenerator.getShapeData());
+  glDrawArrays(GL_TRIANGLES, 0, m_worldGenerator.getVertexCount());
+  m_worldGenerator.unbindVao();
+
   glUseProgram(0);
 
-  m_postProcessor.unbindFramebuffer();
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  m_postProcessor.render(settings.perPixelFilter, settings.kernelBasedFilter);
+  /*m_postProcessor.unbindFramebuffer();*/
+  /*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
+  /*m_postProcessor.render(settings.perPixelFilter,
+   * settings.kernelBasedFilter);*/
 
   glErrorCheck();
 }
@@ -249,6 +291,8 @@ void Realtime::bindVbo() {
   m_cube.installVbo();
   m_cylinder.installVbo();
   m_sphere.installVbo();
+
+  m_worldGenerator.installVbo();
 }
 
 void Realtime::keyPressEvent(QKeyEvent *event) {
