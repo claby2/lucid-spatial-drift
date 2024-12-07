@@ -4,11 +4,11 @@
 
 // faces is a vector of filepaths to the faces of the skybox
 void Skybox::initialize() {
+  glActiveTexture(GL_TEXTURE0);
     m_shader = ShaderLoader::createShaderProgram(
         ":/resources/shaders/skybox.vert", ":/resources/shaders/skybox.frag");
 
     glGenTextures(1, &m_texture);
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 
     QString posx = QString(":/resources/skyboxImages/px.png");
@@ -98,6 +98,7 @@ void Skybox::initialize() {
     glBufferData(GL_ARRAY_BUFFER, skyboxVertices.size()*sizeof(GLfloat), skyboxVertices.data(), GL_STATIC_DRAW);
     glGenVertexArrays(1, &m_vao);
     glBindVertexArray(m_vao);
+  glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat),
                           nullptr);
     glBindVertexArray(0);
