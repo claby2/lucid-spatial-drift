@@ -91,6 +91,12 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/postprocess.vert
     	resources/shaders/skybox.vert
     	resources/shaders/skybox.frag
+	resources/skyboxImages/px.png
+        resources/skyboxImages/py.png
+	resources/skyboxImages/pz.png
+	resources/skyboxImages/nx.png
+	resources/skyboxImages/ny.png
+	resources/skyboxImages/nz.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

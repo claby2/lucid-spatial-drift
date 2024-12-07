@@ -11,23 +11,10 @@ void Skybox::initialize() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 
-    // QString posx = QString(":/resources/skyboxImages/px.png");
-    // m_image1 = QImage(posx);
-    // if (m_image1.isNull()) {
-    //     std::cout<<"oof"<<std::endl;
-    // }
-    QImageReader reader(":/resources/skyboxImages/px.png");
-    QImage img = reader.read();
-    if(img.isNull()) {
-        qDebug() << reader.errorString();
-    }
+    QString posx = QString(":/resources/skyboxImages/px.png");
+    m_image1 = QImage(posx);
     m_image1 = m_image1.convertToFormat(QImage::Format_RGBA8888).mirrored();
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, m_image1.width(), m_image1.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, m_image1.bits());
-    if (m_image1.bits()) {
-        std::cout<<"loaded image"<<std::endl;
-    } else {
-        std::cout<<"oh"<<std::endl;
-    }
     QString negx = QString(":/resources/skyboxImages/nx.png");
     m_image2 = QImage(negx);
     m_image2 = m_image2.convertToFormat(QImage::Format_RGBA8888).mirrored();

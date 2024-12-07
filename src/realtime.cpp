@@ -297,7 +297,8 @@ void Realtime::resizeGL(int w, int h) {
 void Realtime::settingsChanged() {
   m_settingsChanged = true;
 
-  m_camera.setNearPlane(settings.nearPlane);
+  // m_camera.setNearPlane(settings.nearPlane);
+  m_camera.setNearPlane(0.1f);
   // m_camera.setFarPlane(settings.farPlane);
   m_camera.setFarPlane(1000);
 
