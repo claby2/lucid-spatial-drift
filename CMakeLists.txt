@@ -60,6 +60,7 @@ add_executable(${PROJECT_NAME}
     src/shapes/cube.h
     src/shapes/cylinder.h
     src/shapes/cone.h
+    src/utils/skybox.h src/utils/skybox.cpp
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
@@ -88,6 +89,14 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/default.vert
         resources/shaders/postprocess.frag
         resources/shaders/postprocess.vert
+    	resources/shaders/skybox.vert
+    	resources/shaders/skybox.frag
+	resources/skyboxImages/px.png
+        resources/skyboxImages/py.png
+	resources/skyboxImages/pz.png
+	resources/skyboxImages/nx.png
+	resources/skyboxImages/ny.png
+	resources/skyboxImages/nz.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

@@ -1,6 +1,7 @@
 #pragma once
 
 // Defined before including GLEW to suppress deprecation messages on macOS
+#include "utils/skybox.h"
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
 #endif
@@ -72,6 +73,8 @@ private:
   Sphere m_sphere;
 
   WorldGenerator m_worldGenerator;
+
+  Skybox m_skybox;
 
   GLuint m_defaultShader;
 
