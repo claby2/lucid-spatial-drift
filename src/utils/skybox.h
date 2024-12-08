@@ -1,27 +1,29 @@
 #pragma once
 
+#include "camera.h"
 #include <GL/glew.h>
 #include <QImage>
 
-class Skybox
-{
+class Skybox {
 public:
-    Skybox() = default;
+  Skybox() = default;
 
-    void initialize();
+  void initialize();
 
-    ~Skybox();
+  void render(const Camera &camera);
 
-    GLuint m_shader;
-    GLuint m_texture;
-    GLuint m_vao;
-    GLuint m_vbo;
+  ~Skybox();
 
 private:
-    QImage m_image1;
-    QImage m_image2;
-    QImage m_image3;
-    QImage m_image4;
-    QImage m_image5;
-    QImage m_image6;
+  GLuint m_shader;
+  GLuint m_texture;
+  GLuint m_vao;
+  GLuint m_vbo;
+
+  QImage m_image1;
+  QImage m_image2;
+  QImage m_image3;
+  QImage m_image4;
+  QImage m_image5;
+  QImage m_image6;
 };

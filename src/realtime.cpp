@@ -220,24 +220,7 @@ void Realtime::paintGL() {
   /*m_postProcessor.bindFramebuffer();*/
   /*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
 
-  // draw skybox
-  glDepthMask(GL_FALSE);
-
-  glUseProgram(m_skybox.m_shader);
-
-  glUniformMatrix4fv(glGetUniformLocation(m_skybox.m_shader, "projection"), 1, GL_FALSE, &m_camera.getProjection()[0][0]);
-  glm::mat4 nonTranslateView = glm::mat4(glm::mat3(m_camera.getView()));
-  glUniformMatrix4fv(glGetUniformLocation(m_skybox.m_shader, "view"), 1, GL_FALSE, &nonTranslateView[0][0]);
-  glBindVertexArray(m_skybox.m_vao);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, m_skybox.m_texture);
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-  glDepthMask(GL_TRUE);
-
-  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-  glBindVertexArray(0);
-  glUseProgram(0);
-  // finished drawing skybox
+  m_skybox.render(m_camera);
 
   glUseProgram(m_defaultShader);
 
@@ -297,10 +280,8 @@ void Realtime::resizeGL(int w, int h) {
 void Realtime::settingsChanged() {
   m_settingsChanged = true;
 
-  // m_camera.setNearPlane(settings.nearPlane);
-  m_camera.setNearPlane(0.1f);
-  // m_camera.setFarPlane(settings.farPlane);
-  m_camera.setFarPlane(1000);
+  m_camera.setNearPlane(settings.nearPlane);
+  m_camera.setFarPlane(settings.farPlane);
 
   m_cone.updateParams(settings.shapeParameter1, settings.shapeParameter2);
   m_cube.updateParams(settings.shapeParameter1, settings.shapeParameter2);
