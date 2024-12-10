@@ -44,6 +44,7 @@ add_executable(${PROJECT_NAME}
     src/utils/skybox.cpp
     src/enemies/enemymanager.cpp
     src/enemies/enemy.cpp
+    src/enemies/projectile.cpp
 
     src/mainwindow.h
     src/realtime.h
@@ -66,6 +67,7 @@ add_executable(${PROJECT_NAME}
     src/utils/skybox.h
     src/enemies/enemymanager.h
     src/enemies/enemy.h
+    src/enemies/projectile.h
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`

@@ -25,6 +25,7 @@
 #include "utils/worldgenerator.h"
 
 #include "enemies/enemymanager.h"
+#include "enemies/projectile.h"
 
 class Realtime : public QOpenGLWidget {
 public:
@@ -78,6 +79,7 @@ private:
 
   Skybox m_skybox;
   EnemyManager m_enemyManager;
+  ProjectileManager m_projectileManager;
 
   GLuint m_defaultShader;
 

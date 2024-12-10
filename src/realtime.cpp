@@ -254,6 +254,8 @@ void Realtime::paintGL() {
   loadCamera();
   loadLights();
 
+  m_renderData.shapes = m_projectileManager.getRenderData();
+
   for (const RenderShapeData &shapeData : m_renderData.shapes) {
     Shape *shape;
     switch (shapeData.primitive.type) {
@@ -374,7 +376,14 @@ void Realtime::timerEvent(QTimerEvent *event) {
   const float speed = 30.0f;
 
   float factor = speed * deltaTime;
+
   m_enemyManager.update(deltaTime, m_camera.getPos());
+  m_projectileManager.update(deltaTime);
+
+  if (m_keyMap[Qt::Key_F]) {
+    m_projectileManager.spawnProjectile(m_camera.getPos(), m_camera.getLook());
+  }
+
   glm::vec3 look = glm::normalize(m_camera.getLook());
   glm::vec3 up = glm::normalize(m_camera.getUp());
 
