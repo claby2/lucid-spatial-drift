@@ -33,18 +33,16 @@ EnemyManager::EnemyManager(GLuint shader, std::vector<GLuint>& textures) {
 
 void EnemyManager::update(float deltaTime) {
     spawnEnemy();
-    for (Enemy e : enemies) {
-        std::cout << "Before:" << e.position[0] << std::endl;
+    for (Enemy& e : enemies) {
         e.update(deltaTime);
-        std::cout << "After: " << e.position[0] << std::endl;
     }
 }
 
 const int spawnInterval = 10;
-const int maxEnemyCount = 1;
+const int maxEnemyCount = 10;
 void EnemyManager::spawnEnemy() {
     if (time(NULL) - lastSpawnTime > spawnInterval && enemies.size() < maxEnemyCount) {
-        enemies.push_back(Enemy(NormalEnemy, cameraPos, 100, 100, this));
+        enemies.push_back(Enemy(NormalEnemy, cameraPos, 3, 100, this));
         lastSpawnTime = time(NULL);
     }
 }

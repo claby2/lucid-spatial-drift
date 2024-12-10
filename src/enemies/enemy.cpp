@@ -4,7 +4,6 @@
 
 const float targetPosRad = 3;
 Enemy::Enemy(EnemyType t, glm::vec3 startPos, float speed, int initHealth, EnemyManager* manager) {
-    std::cout << "Init" << std::endl;
     type = t;
     position = startPos;
     position[2] -= 1;
@@ -15,7 +14,7 @@ Enemy::Enemy(EnemyType t, glm::vec3 startPos, float speed, int initHealth, Enemy
     glm::vec3 diff = glm::vec3(rand() % 11 - 5, rand() % 11 - 5, rand() % 11 - 5);
     diff = glm::normalize(diff) * targetPosRad;
     targetPosition += diff;
-    velocity = glm::normalize(targetPosition - position) * speed * 2.f;
+    velocity = glm::normalize(targetPosition - position) * speed;
 }
 
 void Enemy::drawEnemy() {
@@ -39,9 +38,6 @@ void Enemy::update(float deltaTime) {
         targetPosition += diff;
         velocity = glm::normalize(targetPosition - position) * speed;
     }
-    //std::cout << "Position: " << position[0] << ", " << position[1] << ", " << position[2] << std::endl;
     auto posChange = velocity * deltaTime;
-    //std::cout << "posCHange: " << posChange[0] << ", " << posChange[1] << ", " << posChange[2] << std::endl;
     this->position += posChange;
-    //std::cout << "New Position: " << position[0] << ", " << position[1] << ", " << position[2] << std::endl;
 }
