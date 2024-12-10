@@ -378,7 +378,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
   float factor = speed * deltaTime;
 
   m_enemyManager.update(deltaTime, m_camera.getPos());
-  m_projectileManager.update(deltaTime);
+  m_projectileManager.update(deltaTime, m_camera.getPos());
 
   if (m_keyMap[Qt::Key_F]) {
     m_projectileManager.spawnProjectile(m_camera.getPos(), m_camera.getLook());

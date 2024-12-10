@@ -20,7 +20,7 @@ public:
   ProjectileManager() = default;
 
   void spawnProjectile(glm::vec3 position, glm::vec3 direction);
-  void update(float deltaTime);
+  void update(float deltaTime, glm::vec3 playerPos);
   std::vector<RenderShapeData> getRenderData() const;
 
 private:

@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
+#define DESPAWN_DISTANCE 100.f
+
 void Projectile::update(float deltaTime) {
   m_position += m_direction * deltaTime;
 }
@@ -14,7 +16,16 @@ void ProjectileManager::spawnProjectile(glm::vec3 position,
   m_projectiles.push_back(Projectile(position, direction));
 }
 
-void ProjectileManager::update(float deltaTime) {
+void ProjectileManager::update(float deltaTime, glm::vec3 playerPos) {
+  // Remove all projectiles that are too far away
+  m_projectiles.erase(std::remove_if(m_projectiles.begin(), m_projectiles.end(),
+                                     [playerPos](const Projectile &p) {
+                                       return glm::distance(p.getPosition(),
+                                                            playerPos) >
+                                              DESPAWN_DISTANCE;
+                                     }),
+                      m_projectiles.end());
+
   for (Projectile &p : m_projectiles) {
     p.update(deltaTime);
   }
