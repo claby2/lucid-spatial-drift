@@ -42,12 +42,13 @@ const int spawnInterval = 10;
 const int maxEnemyCount = 10;
 void EnemyManager::spawnEnemy() {
     if (time(NULL) - lastSpawnTime > spawnInterval && enemies.size() < maxEnemyCount) {
-        enemies.push_back(Enemy(NormalEnemy, cameraPos, 3, 100, this));
+        float randomSize = (rand() % 6 + 2) / 10.f;
+        enemies.push_back(Enemy(NormalEnemy, cameraPos, glm::vec3(randomSize, randomSize, randomSize), 3, 100, this));
         lastSpawnTime = time(NULL);
     }
 }
 
-void EnemyManager::drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint texture) {
+void EnemyManager::drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint texture, std::array<ColorPair, 4> colors) {
     glUseProgram(enemyShader);
     glBindVertexArray(squareVAO);
 
@@ -65,6 +66,11 @@ void EnemyManager::drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint text
     glUniformMatrix4fv(glGetUniformLocation(enemyShader, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(enemyShader, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(enemyShader, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projection));
+    // fill in colors to topLeftColor, topRightColor, bottomLeftColor, bottomRightColor
+    glUniform4fv(glGetUniformLocation(enemyShader, "topLeftColor"), 1, &(colors[0].currentColor[0]));
+    glUniform4fv(glGetUniformLocation(enemyShader, "topRightColor"), 1, &(colors[1].currentColor[0]));
+    glUniform4fv(glGetUniformLocation(enemyShader, "bottomLeftColor"), 1, &(colors[2].currentColor[0]));
+    glUniform4fv(glGetUniformLocation(enemyShader, "bottomRightColor"), 1, &(colors[3].currentColor[0]));
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(glGetUniformLocation(enemyShader, "sampler"), 0);
@@ -78,13 +84,13 @@ void EnemyManager::drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint text
 
 void EnemyManager::render(Enemy& e) {
     if (e.type == NormalEnemy) {
-        drawTextureSquare(e.position, glm::vec3(0.1, 0.1, 0.1), enemyTextures[0]);
+        drawTextureSquare(e.position, e.imgSize, enemyTextures[0], e.colors);
     }
     else if (e.type == SpinEnemy) {
-        drawTextureSquare(e.position, glm::vec3(0.1, 0.1, 0.1), enemyTextures[0]);
+        drawTextureSquare(e.position, e.imgSize, enemyTextures[0], e.colors);
     }
     else if (e.type == OctopusEnemy) {
-        drawTextureSquare(e.position, glm::vec3(0.1, 0.1, 0.1), enemyTextures[0]);
+        drawTextureSquare(e.position, e.imgSize, enemyTextures[0], e.colors);
     }
 }
 
