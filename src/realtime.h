@@ -80,7 +80,6 @@ private:
   EnemyManager m_enemyManager;
 
   GLuint m_defaultShader;
-  GLuint m_enemyShader;
 
   PostProcessor m_postProcessor;
 

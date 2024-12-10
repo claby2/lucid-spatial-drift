@@ -41,6 +41,9 @@ add_executable(${PROJECT_NAME}
     src/shapes/cube.cpp
     src/shapes/cylinder.cpp
     src/shapes/cone.cpp
+    src/utils/skybox.cpp
+    src/enemies/enemymanager.cpp
+    src/enemies/enemy.cpp
 
     src/mainwindow.h
     src/realtime.h
@@ -60,9 +63,9 @@ add_executable(${PROJECT_NAME}
     src/shapes/cube.h
     src/shapes/cylinder.h
     src/shapes/cone.h
-    src/utils/skybox.h src/utils/skybox.cpp
-    src/enemies/enemymanager.h src/enemies/enemymanager.cpp
-    src/enemies/enemy.h src/enemies/enemy.cpp
+    src/utils/skybox.h
+    src/enemies/enemymanager.h
+    src/enemies/enemy.h
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`

@@ -73,37 +73,37 @@ void Realtime::finish() {
   this->doneCurrent();
 }
 
-void loadEnemyTextures(std::vector<GLuint>& output) {
-    std::array<std::string, 13> imageNames{
-        ":/resources/staffImages/anastasio-p.png",
-        ":/resources/staffImages/arin-p.png",
-        ":/resources/staffImages/daniel-p.png",
-        ":/resources/staffImages/evan-p.png",
-        ":/resources/staffImages/faisal-p.png",
-        ":/resources/staffImages/gavin-p.png",
-        ":/resources/staffImages/jean-p.png",
-        ":/resources/staffImages/krishi-p.png",
-        ":/resources/staffImages/luke-p.png",
-        ":/resources/staffImages/praccho-p.png",
-        ":/resources/staffImages/sebastian-p.png",
-        ":/resources/staffImages/sophie-p.png",
-        ":/resources/staffImages/stewart-p.png"
-    };
-    for (auto fileName : imageNames) {
-        QString filepath = QString(fileName.data());
-        QImage img = QImage(filepath);
-        img = img.convertToFormat(QImage::Format_RGBA8888).mirrored();
-        GLuint newTexture;
-        glGenTextures(1, &newTexture);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, newTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                     img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        output.push_back(newTexture);
-    }
+void loadEnemyTextures(std::vector<GLuint> &output) {
+  std::array<std::string, 13> imageNames{
+      ":/resources/staffImages/anastasio-p.png",
+      ":/resources/staffImages/arin-p.png",
+      ":/resources/staffImages/daniel-p.png",
+      ":/resources/staffImages/evan-p.png",
+      ":/resources/staffImages/faisal-p.png",
+      ":/resources/staffImages/gavin-p.png",
+      ":/resources/staffImages/jean-p.png",
+      ":/resources/staffImages/krishi-p.png",
+      ":/resources/staffImages/luke-p.png",
+      ":/resources/staffImages/praccho-p.png",
+      ":/resources/staffImages/sebastian-p.png",
+      ":/resources/staffImages/sophie-p.png",
+      ":/resources/staffImages/stewart-p.png"};
+  for (auto fileName : imageNames) {
+    QString filepath = QString(fileName.data());
+
+    QImage img = QImage(filepath);
+    img = img.convertToFormat(QImage::Format_RGBA8888).mirrored();
+    GLuint newTexture;
+    glGenTextures(1, &newTexture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, newTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width(), img.height(), 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    output.push_back(newTexture);
+  }
 }
 
 void Realtime::initializeGL() {
@@ -149,11 +149,11 @@ void Realtime::initializeGL() {
   m_skybox = Skybox();
   m_skybox.initialize();
 
-  m_enemyShader = ShaderLoader::createShaderProgram(":/resources/shaders/enemy.vert", ":/resources/shaders/enemy.frag");
-  glUseProgram(m_enemyShader);
+  GLuint enemyShader = ShaderLoader::createShaderProgram(
+      ":/resources/shaders/enemy.vert", ":/resources/shaders/enemy.frag");
   std::vector<GLuint> enemyTextures;
   loadEnemyTextures(enemyTextures);
-  m_enemyManager = EnemyManager(m_enemyShader, enemyTextures);
+  m_enemyManager = EnemyManager(enemyShader, enemyTextures);
   glUseProgram(0);
   bindVbo();
 }
@@ -298,7 +298,8 @@ void Realtime::paintGL() {
 
   glUseProgram(0);
 
-  m_enemyManager.drawAllEnemy(m_camera.getView(), m_camera.getProjection(), m_camera.getPos());
+  m_enemyManager.render(m_camera.getPos(), m_camera.getView(),
+                        m_camera.getProjection());
 
   /*m_postProcessor.unbindFramebuffer();*/
   /*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
@@ -386,7 +387,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
   const float speed = 30.0f;
 
   float factor = speed * deltaTime;
-  m_enemyManager.update(deltaTime);
+  m_enemyManager.update(deltaTime, m_camera.getPos());
   glm::vec3 look = glm::normalize(m_camera.getLook());
   glm::vec3 up = glm::normalize(m_camera.getUp());
 

@@ -1,30 +1,29 @@
 #pragma once
+#include "enemy.h"
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <vector>
-#include <GL/glew.h>
-#include "enemy.h"
 
-class EnemyManager
-{
+class EnemyManager {
 public:
-    EnemyManager(){};
-    EnemyManager(GLuint shader, std::vector<GLuint>& textures);
-    std::vector<Enemy> enemies;
-    int lastSpawnTime;
-    void spawnEnemy();
-    void drawAllEnemy();
-    GLuint squareVBO;
-    GLuint squareVAO;
-    GLuint enemyShader;
-    void drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint texture, std::array<ColorPair, 4> colors);
-    void drawAllEnemy(glm::mat4 view, glm::mat4 projection, glm::vec3 cameraPos);
-    void update(float deltaTime);
-    void render(Enemy& e);
+  EnemyManager() = default;
+  EnemyManager(GLuint shader, const std::vector<GLuint> &enemyTextures);
 
-    glm::vec3 cameraPos;
-    glm::mat4 view;
-    glm::mat4 projection;
+  void update(float deltaTime, glm::vec3 targetPosition);
+  void render(glm::vec3 cameraPos, glm::mat4 view, glm::mat4 projection);
 
-    std::vector<GLuint> enemyTextures;
+private:
+  void drawTextureSquare(glm::vec3 enemyPosition, GLuint texture,
+                         glm::vec3 cameraPos, glm::mat4 view,
+                         glm::mat4 projection);
+  void spawnEnemy();
+
+  int m_lastSpawnTime;
+  std::vector<GLuint> m_enemyTextures;
+
+  GLuint m_squareVBO;
+  GLuint m_squareVAO;
+  GLuint m_shader;
+
+  std::vector<Enemy> m_enemies;
 };
-
