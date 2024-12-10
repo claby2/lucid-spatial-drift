@@ -1,9 +1,13 @@
 #include "enemymanager.h"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include <ctime>
+#include <iostream>
 
-EnemyManager::EnemyManager() {
+EnemyManager::EnemyManager(GLuint shader, std::vector<GLuint>& textures) {
     lastSpawnTime = time(NULL);
-    enemyShader = LoadShaders("resources/shaders/enemy.vert", "resources/shaders/enemy.frag");
-    
+    enemyShader = shader;
+    enemyTextures = textures;
     glGenBuffers(1, &squareVBO);
     glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
     std::vector<GLfloat> squareVertices = {
@@ -27,16 +31,28 @@ EnemyManager::EnemyManager() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void EnemyManager::update(float deltaTime) {
+    spawnEnemy();
+    for (Enemy e : enemies) {
+        std::cout << "Before:" << e.position[0] << std::endl;
+        e.update(deltaTime);
+        std::cout << "After: " << e.position[0] << std::endl;
+    }
+}
 
-const int spawnInterval = 10000;
+const int spawnInterval = 10;
+const int maxEnemyCount = 1;
 void EnemyManager::spawnEnemy() {
-    if (time(NULL) - lastSpawnTime > spawnInterval) {
-        enemies.push_back(Enemy(NormalEnemy, glm::vec3(0, 0, 0), 0.1, 10));
+    if (time(NULL) - lastSpawnTime > spawnInterval && enemies.size() < maxEnemyCount) {
+        enemies.push_back(Enemy(NormalEnemy, cameraPos, 100, 100, this));
         lastSpawnTime = time(NULL);
     }
 }
 
-void EnemyManager::drawAllEnemy() {
+void EnemyManager::drawAllEnemy(glm::mat4 view, glm::mat4 projection, glm::vec3 cameraPos) {
+    this->view = view;
+    this->projection = projection;
+    this->cameraPos = cameraPos;
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i].drawEnemy();
     }
@@ -50,9 +66,9 @@ void EnemyManager::drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint text
     glm::vec3 toVec = glm::normalize(facing);
     glm::vec3 axis = glm::cross(fromVec, toVec);
     float angle = glm::acos(glm::dot(fromVec, toVec));
-    glm::mat4 rotmat = glm::rotate(angle, axis);
-    glm::mat4 scaleMat = glm::scale(scale);
-    glm::mat4 translateMat = glm::translate(pos);
+    glm::mat4 rotmat = glm::rotate(glm::mat4(1), angle, axis);
+    glm::mat4 scaleMat = glm::scale(glm::mat4(1), scale);
+    glm::mat4 translateMat = glm::translate(glm::mat4(1), pos);
 
     glm::mat4 model = translateMat * rotmat * scaleMat;
 
@@ -61,8 +77,9 @@ void EnemyManager::drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint text
     glUniformMatrix4fv(glGetUniformLocation(enemyShader, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projection));
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform1i(glGetUniformLocation(enemyShader, "ourTexture"), 0);
+    glUniform1i(glGetUniformLocation(enemyShader, "sampler"), 0);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
     
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

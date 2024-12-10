@@ -24,6 +24,8 @@
 #include "utils/postprocessor.h"
 #include "utils/worldgenerator.h"
 
+#include "enemies/enemymanager.h"
+
 class Realtime : public QOpenGLWidget {
 public:
   Realtime(QWidget *parent = nullptr);
@@ -75,8 +77,10 @@ private:
   WorldGenerator m_worldGenerator;
 
   Skybox m_skybox;
+  EnemyManager m_enemyManager;
 
   GLuint m_defaultShader;
+  GLuint m_enemyShader;
 
   PostProcessor m_postProcessor;
 

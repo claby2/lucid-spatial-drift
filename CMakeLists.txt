@@ -61,6 +61,8 @@ add_executable(${PROJECT_NAME}
     src/shapes/cylinder.h
     src/shapes/cone.h
     src/utils/skybox.h src/utils/skybox.cpp
+    src/enemies/enemymanager.h src/enemies/enemymanager.cpp
+    src/enemies/enemy.h src/enemies/enemy.cpp
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
@@ -70,7 +72,8 @@ add_subdirectory(glm)
 add_library(StaticGLEW STATIC glew/src/glew.c
     src/enemies/enemymanager.h src/enemies/enemymanager.cpp
     resources/shaders/enemy.frag
-    resources/shaders/enemy.vert)
+    resources/shaders/enemy.vert
+    src/enemies/enemy.h src/enemies/enemy.cpp)
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
 
 # Specifies libraries to be linked (Qt components, glew, etc)
@@ -102,6 +105,19 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
 	resources/skyboxImages/nx.png
 	resources/skyboxImages/ny.png
 	resources/skyboxImages/nz.png
+        resources/staffImages/anastasio-p.png
+        resources/staffImages/arin-p.png
+        resources/staffImages/daniel-p.png
+        resources/staffImages/evan-p.png
+        resources/staffImages/faisal-p.png
+        resources/staffImages/gavin-p.png
+        resources/staffImages/jean-p.png
+        resources/staffImages/krishi-p.png
+        resources/staffImages/luke-p.png
+        resources/staffImages/praccho-p.png
+        resources/staffImages/sebastian-p.png
+        resources/staffImages/sophie-p.png
+        resources/staffImages/stewart-p.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

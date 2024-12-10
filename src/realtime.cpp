@@ -73,6 +73,53 @@ void Realtime::finish() {
   this->doneCurrent();
 }
 
+void loadEnemyTextures(std::vector<GLuint>& output) {
+    std::array<std::string, 13> imageNames{
+        ":/resources/staffImages/anastasio-p.png",
+        ":/resources/staffImages/arin-p.png",
+        ":/resources/staffImages/daniel-p.png",
+        ":/resources/staffImages/evan-p.png",
+        ":/resources/staffImages/faisal-p.png",
+        ":/resources/staffImages/gavin-p.png",
+        ":/resources/staffImages/jean-p.png",
+        ":/resources/staffImages/krishi-p.png",
+        ":/resources/staffImages/luke-p.png",
+        ":/resources/staffImages/praccho-p.png",
+        ":/resources/staffImages/sebastian-p.png",
+        ":/resources/staffImages/sophie-p.png",
+        ":/resources/staffImages/stewart-p.png"
+    };
+    for (auto fileName : imageNames) {
+        QString filepath = QString(fileName.data());
+
+        // Task 1: Obtain image from filepath
+        QImage img = QImage(filepath);
+
+        // Task 2: Format image to fit OpenGL
+        img = img.convertToFormat(QImage::Format_RGBA8888).mirrored();
+        // Task 3: Generate kitten texture
+        GLuint newTexture;
+        glGenTextures(1, &newTexture);
+
+        // Task 9: Set the active texture slot to texture slot 0
+        glActiveTexture(0);
+        // Task 4: Bind kitten texture
+        glBindTexture(GL_TEXTURE_2D, newTexture);
+
+        // Task 5: Load image into kitten texture
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                     img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
+
+        // Task 6: Set min and mag filters' interpolation mode to linear
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Task 7: Unbind kitten texture
+        glBindTexture(GL_TEXTURE_2D, 0);
+        output.push_back(newTexture);
+    }
+}
+
 void Realtime::initializeGL() {
   m_devicePixelRatio = this->devicePixelRatio();
 
@@ -116,6 +163,12 @@ void Realtime::initializeGL() {
   m_skybox = Skybox();
   m_skybox.initialize();
 
+  m_enemyShader = ShaderLoader::createShaderProgram(":/resources/shaders/enemy.vert", ":/resources/shaders/enemy.frag");
+  glUseProgram(m_enemyShader);
+  std::vector<GLuint> enemyTextures;
+  loadEnemyTextures(enemyTextures);
+  m_enemyManager = EnemyManager(m_enemyShader, enemyTextures);
+  glUseProgram(0);
   bindVbo();
 }
 
@@ -259,6 +312,8 @@ void Realtime::paintGL() {
 
   glUseProgram(0);
 
+  m_enemyManager.drawAllEnemy(m_camera.getView(), m_camera.getProjection(), m_camera.getPos());
+
   /*m_postProcessor.unbindFramebuffer();*/
   /*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
   /*m_postProcessor.render(settings.perPixelFilter,
@@ -345,6 +400,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
   const float speed = 30.0f;
 
   float factor = speed * deltaTime;
+  m_enemyManager.update(deltaTime);
   glm::vec3 look = glm::normalize(m_camera.getLook());
   glm::vec3 up = glm::normalize(m_camera.getUp());
 
