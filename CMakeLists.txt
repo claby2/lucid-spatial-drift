@@ -67,7 +67,10 @@ add_executable(${PROJECT_NAME}
 add_subdirectory(glm)
 
 # GLEW: this creates its library and allows you to `#include "GL/glew.h"`
-add_library(StaticGLEW STATIC glew/src/glew.c)
+add_library(StaticGLEW STATIC glew/src/glew.c
+    src/enemies/enemymanager.h src/enemies/enemymanager.cpp
+    resources/shaders/enemy.frag
+    resources/shaders/enemy.vert)
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
 
 # Specifies libraries to be linked (Qt components, glew, etc)
@@ -91,6 +94,8 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/postprocess.vert
     	resources/shaders/skybox.vert
     	resources/shaders/skybox.frag
+      resources/shaders/enemy.frag
+      resources/shaders/enemy.vert
 	resources/skyboxImages/px.png
         resources/skyboxImages/py.png
 	resources/skyboxImages/pz.png
