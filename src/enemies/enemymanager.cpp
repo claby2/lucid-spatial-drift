@@ -47,18 +47,10 @@ void EnemyManager::spawnEnemy() {
     }
 }
 
-void EnemyManager::drawAllEnemy(glm::mat4 view, glm::mat4 projection, glm::vec3 cameraPos) {
-    this->view = view;
-    this->projection = projection;
-    this->cameraPos = cameraPos;
-    for (int i = 0; i < enemies.size(); i++) {
-        enemies[i].drawEnemy();
-    }
-}
-
 void EnemyManager::drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint texture) {
     glUseProgram(enemyShader);
     glBindVertexArray(squareVAO);
+
     glm::vec3 facing = cameraPos - pos;
     glm::vec3 fromVec = glm::vec3(0, 0, 1);
     glm::vec3 toVec = glm::normalize(facing);
@@ -78,8 +70,31 @@ void EnemyManager::drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint text
     glUniform1i(glGetUniformLocation(enemyShader, "sampler"), 0);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    
+
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
 }
+
+void EnemyManager::render(Enemy& e) {
+    if (e.type == NormalEnemy) {
+        drawTextureSquare(e.position, glm::vec3(0.1, 0.1, 0.1), enemyTextures[0]);
+    }
+    else if (e.type == SpinEnemy) {
+        drawTextureSquare(e.position, glm::vec3(0.1, 0.1, 0.1), enemyTextures[0]);
+    }
+    else if (e.type == OctopusEnemy) {
+        drawTextureSquare(e.position, glm::vec3(0.1, 0.1, 0.1), enemyTextures[0]);
+    }
+}
+
+void EnemyManager::drawAllEnemy(glm::mat4 view, glm::mat4 projection, glm::vec3 cameraPos) {
+    this->view = view;
+    this->projection = projection;
+    this->cameraPos = cameraPos;
+    for (int i = 0; i < enemies.size(); i++) {
+        render(enemies[i]);
+    }
+}
+
+

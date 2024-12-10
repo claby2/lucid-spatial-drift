@@ -2,7 +2,7 @@
 #include "enemymanager.h"
 #include <iostream>
 
-const float targetPosRad = 3;
+const float targetPosRad = 10;
 Enemy::Enemy(EnemyType t, glm::vec3 startPos, float speed, int initHealth, EnemyManager* manager) {
     type = t;
     position = startPos;
@@ -15,18 +15,6 @@ Enemy::Enemy(EnemyType t, glm::vec3 startPos, float speed, int initHealth, Enemy
     diff = glm::normalize(diff) * targetPosRad;
     targetPosition += diff;
     velocity = glm::normalize(targetPosition - position) * speed;
-}
-
-void Enemy::drawEnemy() {
-    if (type == NormalEnemy) {
-        manager->drawTextureSquare(position, glm::vec3(0.1, 0.1, 0.1), manager->enemyTextures[0]);
-    }
-    else if (type == SpinEnemy) {
-        manager->drawTextureSquare(position, glm::vec3(0.1, 0.1, 0.1), manager->enemyTextures[0]);
-    }
-    else if (type == OctopusEnemy) {
-        manager->drawTextureSquare(position, glm::vec3(0.1, 0.1, 0.1), manager->enemyTextures[0]);
-    }
 }
 
 

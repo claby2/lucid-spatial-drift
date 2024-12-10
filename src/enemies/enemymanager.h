@@ -19,6 +19,7 @@ public:
     void drawTextureSquare(glm::vec3 pos, glm::vec3 scale, GLuint texture);
     void drawAllEnemy(glm::mat4 view, glm::mat4 projection, glm::vec3 cameraPos);
     void update(float deltaTime);
+    void render(Enemy& e);
 
     glm::vec3 cameraPos;
     glm::mat4 view;

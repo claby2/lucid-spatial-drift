@@ -12,6 +12,21 @@
 
 #define MAX_LIGHTS 8
 
+inline bool myErrorCheck(std::string msg){
+    GLenum error = glGetError();
+    bool hasError = false;
+    while(error != GL_NO_ERROR){
+        std::cout<<gluErrorString(error)<<std::endl;
+        error = glGetError();
+        hasError = true;
+    }
+    if (hasError) {
+        std::cout << msg << std::endl;
+        exit(0);
+    }
+    return false;
+}
+
 // Set up global data, camera data, and lights
 void initializeRenderData(RenderData &renderData) {
   renderData = RenderData{};
@@ -74,6 +89,7 @@ void Realtime::finish() {
 }
 
 void loadEnemyTextures(std::vector<GLuint>& output) {
+    myErrorCheck("10");
     std::array<std::string, 13> imageNames{
         ":/resources/staffImages/anastasio-p.png",
         ":/resources/staffImages/arin-p.png",
@@ -100,22 +116,24 @@ void loadEnemyTextures(std::vector<GLuint>& output) {
         // Task 3: Generate kitten texture
         GLuint newTexture;
         glGenTextures(1, &newTexture);
-
+        myErrorCheck("11");
         // Task 9: Set the active texture slot to texture slot 0
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
+        myErrorCheck("12");
         // Task 4: Bind kitten texture
         glBindTexture(GL_TEXTURE_2D, newTexture);
-
+        myErrorCheck("13");
         // Task 5: Load image into kitten texture
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                      img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
-
+        myErrorCheck("14");
         // Task 6: Set min and mag filters' interpolation mode to linear
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+        myErrorCheck("15");
         // Task 7: Unbind kitten texture
         glBindTexture(GL_TEXTURE_2D, 0);
+        myErrorCheck("16");
         output.push_back(newTexture);
     }
 }
