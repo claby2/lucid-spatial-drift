@@ -74,20 +74,7 @@ void Realtime::finish() {
 }
 
 void loadEnemyTextures(std::vector<GLuint> &output) {
-  std::array<std::string, 13> imageNames{
-      ":/resources/staffImages/anastasio-p.png",
-      ":/resources/staffImages/arin-p.png",
-      ":/resources/staffImages/daniel-p.png",
-      ":/resources/staffImages/evan-p.png",
-      ":/resources/staffImages/faisal-p.png",
-      ":/resources/staffImages/gavin-p.png",
-      ":/resources/staffImages/jean-p.png",
-      ":/resources/staffImages/krishi-p.png",
-      ":/resources/staffImages/luke-p.png",
-      ":/resources/staffImages/praccho-p.png",
-      ":/resources/staffImages/sebastian-p.png",
-      ":/resources/staffImages/sophie-p.png",
-      ":/resources/staffImages/stewart-p.png"};
+  std::array<std::string, 1> imageNames{":/resources/enemies/creeper.png"};
   for (auto fileName : imageNames) {
     QString filepath = QString(fileName.data());
 

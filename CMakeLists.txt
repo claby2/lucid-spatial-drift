@@ -108,19 +108,7 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
 	resources/skyboxImages/nx.png
 	resources/skyboxImages/ny.png
 	resources/skyboxImages/nz.png
-        resources/staffImages/anastasio-p.png
-        resources/staffImages/arin-p.png
-        resources/staffImages/daniel-p.png
-        resources/staffImages/evan-p.png
-        resources/staffImages/faisal-p.png
-        resources/staffImages/gavin-p.png
-        resources/staffImages/jean-p.png
-        resources/staffImages/krishi-p.png
-        resources/staffImages/luke-p.png
-        resources/staffImages/praccho-p.png
-        resources/staffImages/sebastian-p.png
-        resources/staffImages/sophie-p.png
-        resources/staffImages/stewart-p.png
+        resources/enemies/creeper.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)
