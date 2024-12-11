@@ -1,6 +1,7 @@
 #include "enemymanager.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "../utils/worldgenerator.h"
 #include <ctime>
 #include <iostream>
 
@@ -41,17 +42,30 @@ EnemyManager::EnemyManager(GLuint shader,
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void EnemyManager::update(float deltaTime, glm::vec3 targetPosition) {
+void EnemyManager::update(float deltaTime, std::vector<bool>* worldData) {
+    m_worldData = worldData;
   spawnEnemy();
   for (Enemy &e : m_enemies) {
-    e.update(deltaTime, targetPosition);
+    e.update(deltaTime, *worldData);
   }
+}
+
+glm::vec3 findRandomUnoccupiedPosition(std::vector<bool>& worldData) {
+  int i = rand() % WORLD_DIMENSION;
+  int j = rand() % WORLD_DIMENSION;
+  int k = rand() % WORLD_DIMENSION;
+  while (worldData[i + j * WORLD_DIMENSION + k * WORLD_DIMENSION * WORLD_DIMENSION]) {
+    i = rand() % WORLD_DIMENSION;
+    j = rand() % WORLD_DIMENSION;
+    k = rand() % WORLD_DIMENSION;
+  }
+  return glm::vec3(i, j, k);
 }
 
 void EnemyManager::spawnEnemy() {
   if (time(NULL) - m_lastSpawnTime > SPAWN_INTERVAL &&
       m_enemies.size() < MAX_ENEMY_COUNT) {
-    m_enemies.push_back(Enemy(NormalEnemy, glm::vec3(0.0f, 0.0f, 0.0f)));
+    m_enemies.push_back(Enemy(NormalEnemy, findRandomUnoccupiedPosition(*m_worldData)));
     m_lastSpawnTime = time(NULL);
   }
 }

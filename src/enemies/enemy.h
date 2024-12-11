@@ -1,5 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <vector>
+#include <deque>
 
 enum EnemyType { NormalEnemy, SpinEnemy, OctopusEnemy };
 
@@ -16,9 +18,10 @@ public:
 
   glm::vec3 getPosition() const;
 
-  void update(float deltaTime, glm::vec3 targetPosition);
-
+  void update(float deltaTime, std::vector<bool>& worldData);
+  std::deque<glm::vec3> path;
 private:
   EnemyType m_type;
   glm::vec3 m_position;
+  void genPath(std::vector<bool>& worldData);
 };

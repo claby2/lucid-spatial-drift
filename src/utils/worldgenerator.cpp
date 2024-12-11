@@ -6,7 +6,6 @@
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 
-#define WORLD_DIMENSION 96
 #define ITERATIONS 20
 
 int countNeighbors(const std::vector<bool> &worldData, int x, int y, int z) {
@@ -163,7 +162,7 @@ void WorldGenerator::initialize() {
 // Generate vertex data
 void WorldGenerator::generate() {
   std::vector<bool> worldData = generateWorldData();
-
+    m_worldData = worldData;
   for (int i = 0; i < WORLD_DIMENSION; i++) {
     for (int j = 0; j < WORLD_DIMENSION; j++) {
       for (int k = 0; k < WORLD_DIMENSION; k++) {
@@ -215,3 +214,4 @@ WorldGenerator::~WorldGenerator() {
   m_vbo.free();
   m_vao.free();
 }
+
