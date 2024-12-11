@@ -50,16 +50,10 @@ void Enemy::updateColors(float deltaTime) {
         }
     }
     for (int i = 0; i < 4; i++) {
-        printVec(colors[i].currentColor);
-    }
-    for (int i = 0; i < 4; i++) {
         colors[i].currentColor += (colors[i].targetColor - colors[i].startColor) / colorCycleTime * deltaTime;
     }
     if (abs(colors[0].currentColor[0]) > 1) {
         colors[0].currentColor = colors[0].targetColor;
-    }
-    for (int i = 0; i < 4; i++) {
-        printVec(colors[i].currentColor);
     }
 }
 
