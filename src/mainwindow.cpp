@@ -8,7 +8,6 @@
 #include <QSettings>
 #include <QVBoxLayout>
 #include <iostream>
-#include <QLCDNumber>
 
 void MainWindow::initialize() {
   realtime = new Realtime;
@@ -19,15 +18,7 @@ void MainWindow::initialize() {
   vLayout->setAlignment(Qt::AlignTop);
   hLayout->addLayout(vLayout);
   hLayout->addWidget(aspectRatioWidget, 1);
-
   this->setLayout(hLayout);
-
-  QLCDNumber *lcd = new QLCDNumber(this);
-  lcd->setDigitCount(6);
-  lcd->display(0);
-  lcd->setGeometry(50, 50, 200, 50);
-
-  realtime->connectScoreWidget(lcd);
 
   realtime->settingsChanged(); // THIS IS IMPORTANT
 }

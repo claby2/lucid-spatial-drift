@@ -24,19 +24,15 @@
 #include "utils/postprocessor.h"
 #include "utils/worldgenerator.h"
 #include "utils/collisiondetector.h"
-#include "utils/variablewatcher.h"
 
 #include "enemies/enemymanager.h"
 #include "enemies/projectile.h"
-#include <QLCDNumber>
 
 class Realtime : public QOpenGLWidget {
 public:
   Realtime(QWidget *parent = nullptr);
   void finish(); // Called on program exit
   void settingsChanged();
-
-  void connectScoreWidget(QLCDNumber* lcd);
 
 public slots:
   void tick(QTimerEvent *event); // Called once per tick of m_timer
@@ -85,8 +81,6 @@ private:
   Skybox m_skybox;
   EnemyManager m_enemyManager;
   ProjectileManager m_projectileManager;
-
-  VariableWatcher m_scoreWatcher;
 
   GLuint m_defaultShader;
 

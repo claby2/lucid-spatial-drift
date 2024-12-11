@@ -302,10 +302,6 @@ void Realtime::paintGL() {
   /*m_postProcessor.render(settings.perPixelFilter,
    * settings.kernelBasedFilter);*/
 
-  // Update score
-
-
-
   glErrorCheck();
 }
 
@@ -470,9 +466,4 @@ void Realtime::timerEvent(QTimerEvent *event) {
   }
 
   update();
-}
-
-void Realtime::connectScoreWidget(QLCDNumber* lcd) {
-    connect(&m_scoreWatcher, &VariableWatcher::valueChanged, lcd, QOverload<int>::of(&QLCDNumber::display));
-
 }

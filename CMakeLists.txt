@@ -70,7 +70,6 @@ add_executable(${PROJECT_NAME}
     src/enemies/projectile.h
     src/utils/collisiondetector.h src/utils/collisiondetector.cpp
     src/utils/plane.h src/utils/plane.cpp
-    src/utils/variablewatcher.h src/utils/variablewatcher.cpp
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
