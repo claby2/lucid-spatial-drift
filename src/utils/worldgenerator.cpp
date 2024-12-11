@@ -30,13 +30,36 @@ int countNeighbors(const std::vector<bool> &worldData, int x, int y, int z) {
   return count;
 }
 
+void iterate(std::vector<bool> &worldData) {
+  std::vector<bool> newWorldData = worldData;
+  for (int x = 0; x < WORLD_DIMENSION; x++) {
+    for (int y = 0; y < WORLD_DIMENSION; y++) {
+      for (int z = 0; z < WORLD_DIMENSION; z++) {
+        int neighbors = countNeighbors(worldData, x, y, z);
+        int index =
+            x + y * WORLD_DIMENSION + z * WORLD_DIMENSION * WORLD_DIMENSION;
+        if (worldData[index]) {
+          if (neighbors < 13) {
+            newWorldData[index] = false;
+          }
+        } else {
+          if (neighbors >= 14 && neighbors <= 19) {
+            newWorldData[index] = true;
+          }
+        }
+      }
+    }
+  }
+  worldData = newWorldData;
+}
+
 // Generate a world of size WORLD_DIMENSION x WORLD_DIMENSION x WORLD_DIMENSION
 // True means there is a block, false means there is not
 std::vector<bool> generateWorldData() {
   // TODO: Make this 3D Game of Life
   std::vector<bool> res;
 
-  std::srand(std::time(0));
+  std::srand(std::time(NULL));
 
   // Randomly generate world
   for (int x = 0; x < WORLD_DIMENSION; x++) {
@@ -48,26 +71,7 @@ std::vector<bool> generateWorldData() {
   }
 
   for (int i = 0; i < ITERATIONS; i++) {
-    std::vector<bool> newRes = res;
-    for (int x = 0; x < WORLD_DIMENSION; x++) {
-      for (int y = 0; y < WORLD_DIMENSION; y++) {
-        for (int z = 0; z < WORLD_DIMENSION; z++) {
-          int neighbors = countNeighbors(res, x, y, z);
-          int index =
-              x + y * WORLD_DIMENSION + z * WORLD_DIMENSION * WORLD_DIMENSION;
-          if (res[index]) {
-            if (neighbors < 13) {
-              newRes[index] = false;
-            }
-          } else {
-            if (neighbors >= 14 && neighbors <= 19) {
-              newRes[index] = true;
-            }
-          }
-        }
-      }
-    }
-    res = newRes;
+    iterate(res);
   }
 
   return res;
@@ -161,6 +165,7 @@ void WorldGenerator::initialize() {
 
 // Generate vertex data
 void WorldGenerator::generate() {
+  m_vertexData.clear();
   std::vector<bool> worldData = generateWorldData();
   m_worldData = worldData;
 
@@ -169,6 +174,24 @@ void WorldGenerator::generate() {
       for (int k = 0; k < WORLD_DIMENSION; k++) {
         if (!worldData[i + j * WORLD_DIMENSION +
                        k * WORLD_DIMENSION * WORLD_DIMENSION])
+          continue;
+        glm::vec3 delta = glm::vec3(i, j, k);
+
+        addCube(delta);
+      }
+    }
+  }
+}
+
+void WorldGenerator::step() {
+  m_vertexData.clear();
+  iterate(m_worldData);
+
+  for (int i = 0; i < WORLD_DIMENSION; i++) {
+    for (int j = 0; j < WORLD_DIMENSION; j++) {
+      for (int k = 0; k < WORLD_DIMENSION; k++) {
+        if (!m_worldData[i + j * WORLD_DIMENSION +
+                         k * WORLD_DIMENSION * WORLD_DIMENSION])
           continue;
         glm::vec3 delta = glm::vec3(i, j, k);
 

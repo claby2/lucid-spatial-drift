@@ -12,6 +12,7 @@ public:
   void initialize();
 
   void generate();
+  void step();
   RenderShapeData getShapeData() const;
   std::vector<float>& getVertexData() { return m_vertexData; };
   void installVbo();

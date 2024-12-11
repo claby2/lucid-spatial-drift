@@ -26,7 +26,8 @@ void initializeRenderData(RenderData &renderData) {
   };
 
   // Camera Data
-  glm::vec3 pos = glm::vec3(WORLD_DIMENSION / 2.f, WORLD_DIMENSION + 10.f, WORLD_DIMENSION / 2.f);
+  glm::vec3 pos = glm::vec3(WORLD_DIMENSION / 2.f, WORLD_DIMENSION + 10.f,
+                            WORLD_DIMENSION / 2.f);
   glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
   float heightAngle = 30.0f;
   renderData.cameraData = SceneCameraData{
@@ -367,9 +368,11 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
 
   const float speed = 0.005f;
 
-  m_camera.rotate(-deltaX * speed, glm::vec3(0, 1, 0));
-  m_camera.rotate(-deltaY * speed,
-                  glm::cross(m_camera.getLook(), m_camera.getUp()));
+  if (m_mouseDown) {
+    m_camera.rotate(-deltaX * speed, glm::vec3(0, 1, 0));
+    m_camera.rotate(-deltaY * speed,
+                    glm::cross(m_camera.getLook(), m_camera.getUp()));
+  }
 
   update();
 }
@@ -402,7 +405,8 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
   float factor = speed * deltaTime;
 
-  m_enemyManager.update(deltaTime, m_worldGenerator.getWorldData(), m_projectileManager.getProjectilePositions());
+  m_enemyManager.update(deltaTime, m_worldGenerator.getWorldData(),
+                        m_projectileManager.getProjectilePositions());
   m_projectileManager.update(deltaTime, m_camera.getPos());
 
   if (m_keyMap[Qt::Key_F]) {
@@ -430,28 +434,35 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
   // jump
 
-  if (m_keyMap[Qt::Key_J]) {
-      m_camera.attemptJump();
+  if (m_keyMap[Qt::Key_Space]) {
+    m_camera.attemptJump();
   }
 
-  // std::cout << std::to_string(m_camera.getPos()[0]) + ", " + std::to_string(m_camera.getPos()[1]) + ", " + std::to_string(m_camera.getPos()[2]) << std::endl;
+  // std::cout << std::to_string(m_camera.getPos()[0]) + ", " +
+  // std::to_string(m_camera.getPos()[1]) + ", " +
+  // std::to_string(m_camera.getPos()[2]) << std::endl;
   if (glm::length(moveDir) > 0.0f) {
-      m_camera.m_accel = 20.f * moveDir;
+    m_camera.m_accel = 20.f * moveDir;
   } else {
-      m_camera.m_accel = glm::vec3(0.f);
+    m_camera.m_accel = glm::vec3(0.f);
   }
 
   m_camera.m_accel.y = -15.f;
 
   m_camera.move(m_worldGenerator.getWorldData(), deltaTime);
 
-
-
   if (m_keyMap[Qt::Key_Control] || m_keyMap[Qt::Key_Shift]) {
     m_camera.movePosition(glm::vec3(0, -factor, 0));
   }
-  if (m_keyMap[Qt::Key_Space]) {
-    m_camera.movePosition(glm::vec3(0, factor, 0));
+
+  if (m_keyMap[Qt::Key_R]) {
+    m_worldGenerator.generate();
+    m_settingsChanged = true;
+  }
+
+  if (m_keyMap[Qt::Key_T]) {
+    m_worldGenerator.step();
+    m_settingsChanged = true;
   }
 
   update();

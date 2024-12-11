@@ -8,7 +8,7 @@
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
 
-  a.setOverrideCursor(Qt::BlankCursor);
+  /*a.setOverrideCursor(Qt::BlankCursor);*/
 
   QCoreApplication::setApplicationName("Lucid Spatial Drift");
   QCoreApplication::setOrganizationName("CS 1230");
