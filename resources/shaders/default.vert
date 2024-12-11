@@ -12,6 +12,7 @@ uniform mat3 normalMatrix;
 
 out vec3 worldSpaceNormal;
 out vec3 worldSpacePosition;
+out float currentTime;
 
 void main() {
     worldSpacePosition = (modelMatrix * vec4(vertexPos, 1.0)).xyz;
@@ -22,4 +23,6 @@ void main() {
     worldSpaceNormal = normalMatrix * normalize(vertexNormal);
 
     gl_Position = projectionMatrix * viewMatrix * vec4(worldSpacePosition, 1.0);
+
+    currentTime = time;
 }

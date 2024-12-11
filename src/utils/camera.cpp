@@ -107,6 +107,7 @@ bool Camera::cubeExists(std::vector<bool>& worldData, std::optional<int> idx) {
 }
 
 std::optional<int> Camera::index(int x, int y, int z) {
+    if (x < 0 || x >= WORLD_DIMENSION || y < 0 || y >= WORLD_DIMENSION || z < 0 || z >= WORLD_DIMENSION) { return std::nullopt; }
 
     return x + y * WORLD_DIMENSION + z * WORLD_DIMENSION * WORLD_DIMENSION;
 }

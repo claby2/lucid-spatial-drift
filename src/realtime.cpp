@@ -26,7 +26,7 @@ void initializeRenderData(RenderData &renderData) {
   };
 
   // Camera Data
-  glm::vec3 pos = glm::vec3(12.f, 50.f, 12.f);
+  glm::vec3 pos = glm::vec3(WORLD_DIMENSION / 2.f, WORLD_DIMENSION + 10.f, WORLD_DIMENSION / 2.f);
   glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
   float heightAngle = 30.0f;
   renderData.cameraData = SceneCameraData{
@@ -434,7 +434,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
       m_camera.attemptJump();
   }
 
-  std::cout << std::to_string(m_camera.getPos()[0]) + ", " + std::to_string(m_camera.getPos()[1]) + ", " + std::to_string(m_camera.getPos()[2]) << std::endl;
+  // std::cout << std::to_string(m_camera.getPos()[0]) + ", " + std::to_string(m_camera.getPos()[1]) + ", " + std::to_string(m_camera.getPos()[2]) << std::endl;
   if (glm::length(moveDir) > 0.0f) {
       m_camera.m_accel = 20.f * moveDir;
   } else {
