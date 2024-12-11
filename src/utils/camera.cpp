@@ -26,6 +26,10 @@ glm::mat4 perspective(float fovy, float aspect, float near, float far) {
   return adjustMat * unhingeMat * scaleMat;
 }
 
+glm::vec3 Camera::getPos() const {
+    return m_pos;
+}
+
 glm::mat4 Camera::getView() const {
   glm::vec3 w = glm::normalize(-m_look);
   glm::vec3 v = glm::normalize(m_up - (glm::dot(m_up, w) * w));

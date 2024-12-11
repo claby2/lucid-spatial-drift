@@ -10,6 +10,7 @@ public:
   glm::mat4 getProjection() const;
   glm::vec3 getLook() const;
   glm::vec3 getUp() const;
+  glm::vec3 getPos() const;
 
   void setData(const SceneCameraData &data);
   void setNearPlane(float nearPlane);

@@ -73,6 +73,26 @@ void Realtime::finish() {
   this->doneCurrent();
 }
 
+void loadEnemyTextures(std::vector<GLuint> &output) {
+  std::array<std::string, 1> imageNames{":/resources/enemies/creeper.png"};
+  for (auto fileName : imageNames) {
+    QString filepath = QString(fileName.data());
+
+    QImage img = QImage(filepath);
+    img = img.convertToFormat(QImage::Format_RGBA8888).mirrored();
+    GLuint newTexture;
+    glGenTextures(1, &newTexture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, newTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width(), img.height(), 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    output.push_back(newTexture);
+  }
+}
+
 void Realtime::initializeGL() {
   m_devicePixelRatio = this->devicePixelRatio();
 
@@ -82,6 +102,8 @@ void Realtime::initializeGL() {
   // Initializing GL.
   // GLEW (GL Extension Wrangler) provides access to OpenGL functions.
   glewExperimental = GL_TRUE;
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   GLenum err = glewInit();
   if (err != GLEW_OK) {
     std::cerr << "Error while initializing GL: " << glewGetErrorString(err)
@@ -116,6 +138,12 @@ void Realtime::initializeGL() {
   m_skybox = Skybox();
   m_skybox.initialize();
 
+  GLuint enemyShader = ShaderLoader::createShaderProgram(
+      ":/resources/shaders/enemy.vert", ":/resources/shaders/enemy.frag");
+  std::vector<GLuint> enemyTextures;
+  loadEnemyTextures(enemyTextures);
+  m_enemyManager = EnemyManager(enemyShader, enemyTextures);
+  glUseProgram(0);
   bindVbo();
 }
 
@@ -228,6 +256,8 @@ void Realtime::paintGL() {
   loadCamera();
   loadLights();
 
+  m_renderData.shapes = m_projectileManager.getRenderData();
+
   for (const RenderShapeData &shapeData : m_renderData.shapes) {
     Shape *shape;
     switch (shapeData.primitive.type) {
@@ -258,6 +288,9 @@ void Realtime::paintGL() {
   m_worldGenerator.unbindVao();
 
   glUseProgram(0);
+
+  m_enemyManager.render(m_camera.getPos(), m_camera.getView(),
+                        m_camera.getProjection());
 
   /*m_postProcessor.unbindFramebuffer();*/
   /*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
@@ -345,6 +378,14 @@ void Realtime::timerEvent(QTimerEvent *event) {
   const float speed = 30.0f;
 
   float factor = speed * deltaTime;
+
+  m_enemyManager.update(deltaTime, m_worldGenerator.getWorldData(), m_projectileManager.getProjectilePositions());
+  m_projectileManager.update(deltaTime, m_camera.getPos());
+
+  if (m_keyMap[Qt::Key_F]) {
+    m_projectileManager.spawnProjectile(m_camera.getPos(), m_camera.getLook());
+  }
+
   glm::vec3 look = glm::normalize(m_camera.getLook());
   glm::vec3 up = glm::normalize(m_camera.getUp());
 

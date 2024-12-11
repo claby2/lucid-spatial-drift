@@ -41,6 +41,10 @@ add_executable(${PROJECT_NAME}
     src/shapes/cube.cpp
     src/shapes/cylinder.cpp
     src/shapes/cone.cpp
+    src/utils/skybox.cpp
+    src/enemies/enemymanager.cpp
+    src/enemies/enemy.cpp
+    src/enemies/projectile.cpp
 
     src/mainwindow.h
     src/realtime.h
@@ -60,14 +64,21 @@ add_executable(${PROJECT_NAME}
     src/shapes/cube.h
     src/shapes/cylinder.h
     src/shapes/cone.h
-    src/utils/skybox.h src/utils/skybox.cpp
+    src/utils/skybox.h
+    src/enemies/enemymanager.h
+    src/enemies/enemy.h
+    src/enemies/projectile.h
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
 add_subdirectory(glm)
 
 # GLEW: this creates its library and allows you to `#include "GL/glew.h"`
-add_library(StaticGLEW STATIC glew/src/glew.c)
+add_library(StaticGLEW STATIC glew/src/glew.c
+    src/enemies/enemymanager.h src/enemies/enemymanager.cpp
+    resources/shaders/enemy.frag
+    resources/shaders/enemy.vert
+    src/enemies/enemy.h src/enemies/enemy.cpp)
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
 
 # Specifies libraries to be linked (Qt components, glew, etc)
@@ -91,12 +102,15 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/postprocess.vert
     	resources/shaders/skybox.vert
     	resources/shaders/skybox.frag
+      resources/shaders/enemy.frag
+      resources/shaders/enemy.vert
 	resources/skyboxImages/px.png
         resources/skyboxImages/py.png
 	resources/skyboxImages/pz.png
 	resources/skyboxImages/nx.png
 	resources/skyboxImages/ny.png
 	resources/skyboxImages/nz.png
+        resources/enemies/creeper.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)
