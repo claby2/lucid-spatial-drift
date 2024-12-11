@@ -8,6 +8,7 @@
 #include <QCoreApplication>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <ctime>
 #include <iostream>
 
 #define MAX_LIGHTS 8
@@ -209,6 +210,9 @@ void Realtime::loadLights() {
 }
 
 void Realtime::loadShapeData(const RenderShapeData &shapeData) {
+  GLint timeLoc = glGetUniformLocation(m_defaultShader, "time");
+  glUniform1f(timeLoc, m_totalTime);
+
   GLint modelMatrixLoc = glGetUniformLocation(m_defaultShader, "modelMatrix");
   glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &shapeData.ctm[0][0]);
 
@@ -371,9 +375,28 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void Realtime::timerEvent(QTimerEvent *event) {
+
   int elapsedms = m_elapsedTimer.elapsed();
   float deltaTime = elapsedms * 0.001f;
   m_elapsedTimer.restart();
+
+  m_totalTime += deltaTime;
+
+  float t = deltaTime * 0.5f;
+  glm::vec3 u = glm::normalize(glm::vec3(0.f, 1.f, 0.f));
+
+  glm::mat4 rotMat = glm::mat4(cos(t) + u.x * u.x * (1.0f - cos(t)),
+                               u.x * u.y * (1.0f - cos(t)) + u.z * sin(t),
+                               u.x * u.z * (1.0f - cos(t)) - u.y * sin(t), 0.0f,
+                               u.x * u.y * (1.0f - cos(t)) - u.z * sin(t),
+                               cos(t) + u.y * u.y * (1 - cos(t)),
+                               u.y * u.z * (1.0f - cos(t)) + u.x * sin(t), 0.0f,
+                               u.x * u.z * (1.0f - cos(t)) + u.y * sin(t),
+                               u.y * u.z * (1.0f - cos(t)) - u.x * sin(t),
+                               cos(t) + u.z * u.z * (1.0f - cos(t)), 1.0f, 0.0f,
+                               0.0f, 0.0f, 1.0f);
+
+  m_renderData.lights[0].dir = rotMat * m_renderData.lights[0].dir;
 
   const float speed = 30.0f;
 

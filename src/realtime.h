@@ -91,4 +91,6 @@ private:
   void loadShapeData(const RenderShapeData &shapeData);
 
   bool m_settingsChanged = false;
+
+  float m_totalTime = 0.0f;
 };
