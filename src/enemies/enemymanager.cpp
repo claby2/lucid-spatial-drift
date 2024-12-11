@@ -1,7 +1,6 @@
 #include "enemymanager.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "../utils/worldgenerator.h"
 #include <ctime>
 #include <iostream>
 
@@ -42,30 +41,34 @@ EnemyManager::EnemyManager(GLuint shader,
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void EnemyManager::update(float deltaTime, std::vector<bool>* worldData) {
-    m_worldData = worldData;
+void EnemyManager::update(float deltaTime, const std::vector<bool> &worldData,
+                          const std::vector<glm::vec3> &projectilePositions) {
+  // Prune enemies that are too close to any projectile
+  m_enemies.erase(
+      std::remove_if(m_enemies.begin(), m_enemies.end(),
+                     [projectilePositions](const Enemy &e) {
+                       for (const glm::vec3 &p : projectilePositions) {
+                         if (glm::distance(e.getPosition(), p) < 1.0f) {
+                           return true;
+                         }
+                       }
+                       return false;
+                     }),
+      m_enemies.end());
+
   spawnEnemy();
   for (Enemy &e : m_enemies) {
-    e.update(deltaTime, *worldData);
+    e.update(deltaTime, worldData);
   }
-}
-
-glm::vec3 findRandomUnoccupiedPosition(std::vector<bool>& worldData) {
-  int i = rand() % WORLD_DIMENSION;
-  int j = rand() % WORLD_DIMENSION;
-  int k = rand() % WORLD_DIMENSION;
-  while (worldData[i + j * WORLD_DIMENSION + k * WORLD_DIMENSION * WORLD_DIMENSION]) {
-    i = rand() % WORLD_DIMENSION;
-    j = rand() % WORLD_DIMENSION;
-    k = rand() % WORLD_DIMENSION;
-  }
-  return glm::vec3(i, j, k);
 }
 
 void EnemyManager::spawnEnemy() {
   if (time(NULL) - m_lastSpawnTime > SPAWN_INTERVAL &&
       m_enemies.size() < MAX_ENEMY_COUNT) {
-    m_enemies.push_back(Enemy(NormalEnemy, findRandomUnoccupiedPosition(*m_worldData)));
+    m_enemies.push_back(
+        Enemy(NormalEnemy,
+              glm::vec3(rand() % WORLD_DIMENSION, rand() % WORLD_DIMENSION,
+                        rand() % WORLD_DIMENSION)));
     m_lastSpawnTime = time(NULL);
   }
 }
@@ -74,7 +77,7 @@ void EnemyManager::drawTextureSquare(glm::vec3 enemyPosition, GLuint texture,
                                      glm::vec3 cameraPos, glm::mat4 view,
                                      glm::mat4 projection) {
   // Just make scale a constant for now
-  const glm::vec3 scale = glm::vec3(0.1, 0.1, 0.1);
+  const glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
   glUseProgram(m_shader);
   glBindVertexArray(m_squareVAO);

@@ -9,7 +9,8 @@ public:
   EnemyManager() = default;
   EnemyManager(GLuint shader, const std::vector<GLuint> &enemyTextures);
 
-  void update(float deltaTime, std::vector<bool>* worldData);
+  void update(float deltaTime, const std::vector<bool> &worldData,
+              const std::vector<glm::vec3> &projectilePositions);
   void render(glm::vec3 cameraPos, glm::mat4 view, glm::mat4 projection);
 
 private:
@@ -26,6 +27,4 @@ private:
   GLuint m_shader;
 
   std::vector<Enemy> m_enemies;
-
-  std::vector<bool>* m_worldData;
 };

@@ -56,3 +56,11 @@ std::vector<RenderShapeData> ProjectileManager::getRenderData() const {
   }
   return renderData;
 }
+
+std::vector<glm::vec3> ProjectileManager::getProjectilePositions() const {
+  std::vector<glm::vec3> positions;
+  for (const Projectile &p : m_projectiles) {
+    positions.push_back(p.getPosition());
+  }
+  return positions;
+}

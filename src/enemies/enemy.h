@@ -1,15 +1,35 @@
 #pragma once
+#include "utils/worldgenerator.h"
 #include <glm/glm.hpp>
 #include <vector>
-#include <deque>
 
 enum EnemyType { NormalEnemy, SpinEnemy, OctopusEnemy };
 
-struct ColorPair {
+class Coordinate {
 public:
-  glm::vec4 startColor;
-  glm::vec4 currentColor;
-  glm::vec4 targetColor;
+  int x;
+  int y;
+  int z;
+
+  Coordinate() : x(0), y(0), z(0) {}
+
+  Coordinate(int x, int y, int z) : x(x), y(y), z(z) {}
+
+  bool operator==(const Coordinate &other) const {
+    return x == other.x && y == other.y && z == other.z;
+  }
+
+  bool inBounds() const {
+    return x >= 0 && y >= 0 && z >= 0 && x < WORLD_DIMENSION &&
+           y < WORLD_DIMENSION && z < WORLD_DIMENSION;
+  }
+
+  struct Hash {
+    size_t operator()(const Coordinate &c) const {
+      return std::hash<int>()(c.x) ^ std::hash<int>()(c.y) ^
+             std::hash<int>()(c.z);
+    }
+  };
 };
 
 class Enemy {
@@ -18,10 +38,11 @@ public:
 
   glm::vec3 getPosition() const;
 
-  void update(float deltaTime, std::vector<bool>& worldData);
-  std::deque<glm::vec3> path;
+  void update(float deltaTime, const std::vector<bool> &worldData);
+
 private:
   EnemyType m_type;
   glm::vec3 m_position;
-  void genPath(std::vector<bool>& worldData);
+
+  std::optional<Coordinate> m_targetPosition;
 };

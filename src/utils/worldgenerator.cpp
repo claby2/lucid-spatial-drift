@@ -162,7 +162,8 @@ void WorldGenerator::initialize() {
 // Generate vertex data
 void WorldGenerator::generate() {
   std::vector<bool> worldData = generateWorldData();
-    m_worldData = worldData;
+  m_worldData = worldData;
+
   for (int i = 0; i < WORLD_DIMENSION; i++) {
     for (int j = 0; j < WORLD_DIMENSION; j++) {
       for (int k = 0; k < WORLD_DIMENSION; k++) {
@@ -210,8 +211,9 @@ void WorldGenerator::unbindVao() { m_vao.unbind(); }
 
 int WorldGenerator::getVertexCount() const { return m_vertexData.size() / 6; }
 
+std::vector<bool> &WorldGenerator::getWorldData() { return m_worldData; }
+
 WorldGenerator::~WorldGenerator() {
   m_vbo.free();
   m_vao.free();
 }
-

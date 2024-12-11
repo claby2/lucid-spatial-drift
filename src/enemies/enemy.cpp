@@ -1,13 +1,13 @@
 #include "enemy.h"
 #include "enemymanager.h"
-#include "../utils/worldgenerator.h"
-#include <set>
-#include <tuple>
+#include <algorithm>
 #include <iostream>
+#include <queue>
+#include <unordered_map>
+#include <unordered_set>
 
-
-#define SPEED 5.0f
-#define TARGET_POS_RAD 10.0f
+#define SPEED 10.0f
+#define TARGET_POS_RAD 1.0f
 
 Enemy::Enemy(EnemyType type, glm::vec3 position) {
   m_type = type;
@@ -16,88 +16,85 @@ Enemy::Enemy(EnemyType type, glm::vec3 position) {
 
 glm::vec3 Enemy::getPosition() const { return m_position; }
 
-/*bool recFindPathDFS(int i, int j, int k, int endI, int endJ, int endK,
-  std::vector<bool>& worldData, std::vector<glm::vec3>& output, std::set<std::tuple<int, int, int>>& visited) {
-  visited.insert(std::make_tuple(i, j, k));
-    std::cout << "Visited" << visited.size() << std::endl;
-  std::cout << "Output" << output.size() << std::endl;
-    if (i == endI && j == endJ && k == endK) {
-      output.push_back(glm::vec3(i, j, k));
-      return true;
+Coordinate randomEmptyCoordinate(const std::vector<bool> &worldData) {
+  while (true) {
+    int x = rand() % WORLD_DIMENSION;
+    int y = rand() % WORLD_DIMENSION;
+    int z = rand() % WORLD_DIMENSION;
+    if (!worldData[x + y * WORLD_DIMENSION +
+                   z * WORLD_DIMENSION * WORLD_DIMENSION]) {
+      return Coordinate(x, y, z);
     }
-    output.push_back(glm::vec3(i, j, k));
-    for (int di = -1; di <= 1; di++) {
-      for (int dj = -1; dj <= 1; dj++) {
-        for (int dk = -1; dk <= 1; dk++) {
-          if (di == 0 && dj == 0 && dk == 0) {
-            continue;
-          }
-          int newI = i + di;
-          int newJ = j + dj;
-          int newK = k + dk;
-          if (newI < 0 || newI >= WORLD_DIMENSION || newJ < 0 || newJ >= WORLD_DIMENSION || newK < 0 || newK >= WORLD_DIMENSION) {
-            continue;
-          }
-          if (visited.find(std::make_tuple(newI, newJ, newK)) != visited.end()) {
-            continue;
-          }
-          if (worldData[newI + newJ * WORLD_DIMENSION + newK * WORLD_DIMENSION * WORLD_DIMENSION]) {
-            continue;
-          }
-          if (recFindPathDFS(newI, newJ, newK, endI, endJ, endK, worldData, output, visited)) {
-            return true;
-          }
-        }
-      }
-    }
-    output.pop_back();
-    return false;
-}*/
-
-void Enemy::genPath(std::vector<bool>& worldData) {
-  int i = rand() % (WORLD_DIMENSION);
-  int j = rand() % (WORLD_DIMENSION);
-  int k = rand() % (WORLD_DIMENSION);
-    while (worldData[i + j * WORLD_DIMENSION + k * WORLD_DIMENSION * WORLD_DIMENSION]) { // find valid end position
-      i = rand() % (WORLD_DIMENSION);
-      j = rand() % (WORLD_DIMENSION);
-      k = rand() % (WORLD_DIMENSION);
-    }
-    path.clear();
-    //std::set<std::tuple<int, int, int>> visited;
-    //bool success = recFindPathDFS(currentI, currentJ, currentK, i, j, k, worldData, path, visited);
-    //bool success = true;
-
-    // generate a series of path points from current position to i j k on a Bezier curve
-    glm::vec3 start = m_position;
-    glm::vec3 end = glm::vec3(i, j, k);
-    glm::vec3 mid = (start + end) / 2.0f;
-    glm::vec3 diff = end - start;
-    glm::vec3 control1 = start + glm::vec3(diff.x, 0, 0);
-    glm::vec3 control2 = mid + glm::vec3(0, 0, diff.z);
-    for (int time = 1; time <= 10; time += 1) {
-      float t = time / 10.0f;
-      float u = 1.0f - t;
-      glm::vec3 point = u * u * u * start + 3 * u * u * t * control1 + 3 * u * t * t * control2 + t * t * t * end;
-      path.push_back(point);
-    }
+  }
 }
 
-void Enemy::update(float deltaTime, std::vector<bool>& worldData) {
-    if (glm::distance(path.front(), m_position) < 0.1f) {
-        path.pop_front();
-    }
-    if (path.size() == 0) {
-        genPath(worldData);
-    }
-    glm::vec3 targetPosition = path.front();
-    path.pop_front();
-  if (glm::distance(m_position, targetPosition) < 0.1f) {
-    glm::vec3 diff =
-        glm::vec3(rand() % 11 - 5, rand() % 11 - 5, rand() % 11 - 5);
-    diff = glm::normalize(diff) * TARGET_POS_RAD;
-    targetPosition += diff;
+// Returns true if there are no blocks between start and end
+bool noBlocksBetween(const Coordinate &start, const Coordinate &end,
+                     const std::vector<bool> &worldData) {
+  int dx = abs(end.x - start.x);
+  int dy = abs(end.y - start.y);
+  int dz = abs(end.z - start.z);
+
+  int steps = std::max({dx, dy, dz});
+  if (steps == 0) {
+    int idx = start.x + start.y * WORLD_DIMENSION +
+              start.z * WORLD_DIMENSION * WORLD_DIMENSION;
+    return !worldData[idx];
   }
-  glm::vec3 velocity = glm::normalize(targetPosition - m_position) * SPEED;
-  m_position += velocity * deltaTime;
+
+  float sx = static_cast<float>(end.x - start.x) / steps;
+  float sy = static_cast<float>(end.y - start.y) / steps;
+  float sz = static_cast<float>(end.z - start.z) / steps;
+
+  float x = static_cast<float>(start.x);
+  float y = static_cast<float>(start.y);
+  float z = static_cast<float>(start.z);
+
+  for (int i = 0; i <= steps; ++i) {
+    int ix = static_cast<int>(std::round(x));
+    int iy = static_cast<int>(std::round(y));
+    int iz = static_cast<int>(std::round(z));
+    if (ix < 0 || ix >= WORLD_DIMENSION || iy < 0 || iy >= WORLD_DIMENSION ||
+        iz < 0 || iz >= WORLD_DIMENSION) {
+      return false;
+    }
+    int idx =
+        ix + iy * WORLD_DIMENSION + iz * WORLD_DIMENSION * WORLD_DIMENSION;
+    if (worldData[idx]) {
+      return false;
+    }
+    x += sx;
+    y += sy;
+    z += sz;
+  }
+  return true;
+}
+
+void Enemy::update(float deltaTime, const std::vector<bool> &worldData) {
+  if (worldData.size() != WORLD_DIMENSION * WORLD_DIMENSION * WORLD_DIMENSION) {
+    std::cout << "World data size is not correct" << std::endl;
+    return;
+  }
+
+  Coordinate currentPos(static_cast<int>(m_position.x),
+                        static_cast<int>(m_position.y),
+                        static_cast<int>(m_position.z));
+
+  if (!m_targetPosition.has_value() ||
+      glm::distance(glm::vec3(m_targetPosition.value().x,
+                              m_targetPosition.value().y,
+                              m_targetPosition.value().z),
+                    m_position) < TARGET_POS_RAD) {
+    Coordinate target = randomEmptyCoordinate(worldData);
+    if (noBlocksBetween(currentPos, target, worldData)) {
+      m_targetPosition = target;
+    }
+    return;
+  }
+
+  m_position += SPEED * deltaTime *
+                glm::normalize(glm::vec3(m_targetPosition.value().x,
+                                         m_targetPosition.value().y,
+                                         m_targetPosition.value().z) -
+                               m_position);
 }

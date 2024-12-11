@@ -17,8 +17,8 @@ public:
   void bindVao();
   void unbindVao();
   int getVertexCount() const;
-  std::vector<bool>& getWorldData() { return WorldGenerator::m_worldData; };
-  void setWorldData(std::vector<bool> d) {WorldGenerator::m_worldData = d;};
+
+  std::vector<bool> &getWorldData();
 
   ~WorldGenerator();
 
@@ -34,6 +34,5 @@ private:
   VboManager m_vbo;
 
   std::vector<float> m_vertexData;
-
   std::vector<bool> m_worldData;
 };
