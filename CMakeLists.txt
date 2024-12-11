@@ -61,13 +61,16 @@ add_executable(${PROJECT_NAME}
     src/shapes/cylinder.h
     src/shapes/cone.h
     src/utils/skybox.h src/utils/skybox.cpp
+    src/utils/collisiondetector.h src/utils/collisiondetector.cpp
+    src/utils/plane.h src/utils/plane.cpp
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
 add_subdirectory(glm)
 
 # GLEW: this creates its library and allows you to `#include "GL/glew.h"`
-add_library(StaticGLEW STATIC glew/src/glew.c)
+add_library(StaticGLEW STATIC glew/src/glew.c
+)
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
 
 # Specifies libraries to be linked (Qt components, glew, etc)

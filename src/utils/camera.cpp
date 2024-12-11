@@ -79,3 +79,64 @@ void Camera::rotate(float angle, glm::vec3 axis) {
   m_look = glm::vec3(rotMat * glm::vec4(m_look, 0.0f));
   m_up = glm::vec3(rotMat * glm::vec4(m_up, 0.0f));
 }
+
+void Camera::collideAndSlide(std::vector<float>& vertexData, const glm::vec3 v, const glm::vec3 g) {
+
+    // movement
+
+    CollisionDetector::CollisionPacket collisionPackage;
+
+    collisionPackage.R3Position = m_pos;
+    collisionPackage.R3Velocity = v;
+    collisionPackage.ellipsoidSize = playerSize;
+
+    glm::vec3 ellipsoidSpacePosition = collisionPackage.R3Position / collisionPackage.ellipsoidSize;
+    glm::vec3 ellipsoidSpaceVelocity = collisionPackage.R3Velocity / collisionPackage.ellipsoidSize;
+
+    collisionPackage.basePoint = ellipsoidSpacePosition;
+    collisionPackage.velocity = ellipsoidSpaceVelocity;
+    collisionPackage.normalizedVelocity = glm::normalize(ellipsoidSpaceVelocity);
+
+    glm::vec3 finalPosition = collideWithWorld(0, vertexData, collisionPackage);
+
+    // gravity
+
+    CollisionDetector::CollisionPacket gravityCollisionPackage;
+
+    gravityCollisionPackage.R3Position = finalPosition * collisionPackage.ellipsoidSize;
+    gravityCollisionPackage.R3Velocity = g;
+    gravityCollisionPackage.ellipsoidSize = playerSize;
+
+    ellipsoidSpacePosition = gravityCollisionPackage.R3Position / collisionPackage.ellipsoidSize;
+    ellipsoidSpaceVelocity = g / gravityCollisionPackage.ellipsoidSize;
+
+    gravityCollisionPackage.basePoint = ellipsoidSpacePosition;
+    gravityCollisionPackage.velocity = ellipsoidSpaceVelocity;
+    gravityCollisionPackage.normalizedVelocity = glm::normalize(ellipsoidSpaceVelocity);
+
+    finalPosition = collideWithWorld(0, vertexData, gravityCollisionPackage);
+
+    finalPosition *= playerSize;
+
+    m_pos = finalPosition;
+}
+
+glm::vec3 Camera::collideWithWorld(int depth, std::vector<float>& vertexData, CollisionDetector::CollisionPacket collisionPackage) {
+    float unitScale = 1.f;
+    float epsilon = 0.005f * unitScale;
+
+    glm::vec3 pos = collisionPackage.basePoint;
+    glm::vec3 v = collisionPackage.velocity;
+
+    if (depth > 5) { return pos; }
+
+    m_collisionDetector.checkWorldCollision(vertexData, collisionPackage);
+
+    if (!(collisionPackage.foundCollision)) { return pos + v; }
+
+    // if collision (TODO: implement)
+
+    glm::vec3 destinationPoint = pos + v;
+
+    return collisionPackage.basePoint;
+}

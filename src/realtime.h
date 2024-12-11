@@ -23,6 +23,7 @@
 #include "utils/objectmanager.h"
 #include "utils/postprocessor.h"
 #include "utils/worldgenerator.h"
+#include "utils/collisiondetector.h"
 
 class Realtime : public QOpenGLWidget {
 public:
@@ -79,6 +80,8 @@ private:
   GLuint m_defaultShader;
 
   PostProcessor m_postProcessor;
+
+  glm::vec3 GRAVITY_COEFF = glm::vec3(0.f, -0.1f, 0.f);
 
   void loadConstants();
   void loadCamera();

@@ -25,7 +25,7 @@ void initializeRenderData(RenderData &renderData) {
   };
 
   // Camera Data
-  glm::vec3 pos = glm::vec3(50.0f);
+  glm::vec3 pos = glm::vec3(50.f, 100.f, 50.f);
   glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
   float heightAngle = 30.0f;
   renderData.cameraData = SceneCameraData{
@@ -364,8 +364,14 @@ void Realtime::timerEvent(QTimerEvent *event) {
     moveDir += glm::normalize(glm::cross(look, up));
   }
 
-  if (glm::length(moveDir) > 0.0f)
-    m_camera.movePosition(factor * glm::normalize(moveDir));
+  std::cout << std::to_string(m_camera.getPos()[0]) + ", " + std::to_string(m_camera.getPos()[1]) + ", " + std::to_string(m_camera.getPos()[2]) << std::endl;
+  if (glm::length(moveDir) > 0.0f) {
+      m_camera.collideAndSlide(m_worldGenerator.getVertexData(), factor * glm::normalize(moveDir), factor * GRAVITY_COEFF);
+  } else {
+      m_camera.collideAndSlide(m_worldGenerator.getVertexData(), glm::vec3(0, 0, 0), GRAVITY_COEFF);
+  }
+
+
 
   if (m_keyMap[Qt::Key_Control] || m_keyMap[Qt::Key_Shift]) {
     m_camera.movePosition(glm::vec3(0, -factor, 0));
