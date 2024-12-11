@@ -17,5 +17,10 @@ void main(void)
         u * (1-v) * bottomLeftColor + 
         (1-u) * v * topRightColor +
         (1-u) * (1-v) * bottomRightColor;
-    fragColor = texture(sampler, uv) + 0.5f * filterColor;
+    vec4 c = texture(sampler, uv);
+    if (c[3] == 0) {
+        fragColor = c;
+    } else {
+        fragColor = texture(sampler, uv) + 0.5f * filterColor;
+    }
 }

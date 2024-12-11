@@ -2,8 +2,17 @@
 #include "utils/worldgenerator.h"
 #include <glm/glm.hpp>
 #include <vector>
+#include <array>
+#include <optional>
 
 enum EnemyType { NormalEnemy, SpinEnemy, OctopusEnemy };
+
+struct ColorPair {
+public:
+    glm::vec4 startColor;
+    glm::vec4 currentColor;
+    glm::vec4 targetColor;
+};
 
 class Coordinate {
 public:
@@ -23,13 +32,6 @@ public:
     return x >= 0 && y >= 0 && z >= 0 && x < WORLD_DIMENSION &&
            y < WORLD_DIMENSION && z < WORLD_DIMENSION;
   }
-
-  struct Hash {
-    size_t operator()(const Coordinate &c) const {
-      return std::hash<int>()(c.x) ^ std::hash<int>()(c.y) ^
-             std::hash<int>()(c.z);
-    }
-  };
 };
 
 class Enemy {
@@ -37,6 +39,8 @@ public:
   Enemy(EnemyType type, glm::vec3 position);
 
   glm::vec3 getPosition() const;
+  std::array<ColorPair,4> colors;
+  void updateColors(float deltaTime);
 
   void update(float deltaTime, const std::vector<bool> &worldData);
 

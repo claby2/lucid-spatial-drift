@@ -9,9 +9,18 @@
 #define SPEED 10.0f
 #define TARGET_POS_RAD 1.0f
 
+glm::vec4 randomColor() {
+    return glm::vec4((rand() % 256) / 255.0f, (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1.0f);
+}
+
 Enemy::Enemy(EnemyType type, glm::vec3 position) {
   m_type = type;
   m_position = position;
+  for (int i = 0; i < 4; i++) {
+      colors[i].startColor = randomColor();
+      colors[i].currentColor = colors[i].startColor;
+      colors[i].targetColor = randomColor();
+  }
 }
 
 glm::vec3 Enemy::getPosition() const { return m_position; }
@@ -26,6 +35,32 @@ Coordinate randomEmptyCoordinate(const std::vector<bool> &worldData) {
       return Coordinate(x, y, z);
     }
   }
+}
+
+void printVec(glm::vec4 v) {
+    std::cout << v.x << ", " << v.y << ", " << v.z << ", " << v.w << std::endl;
+}
+
+const float colorCycleTime = 0.8f;
+void Enemy::updateColors(float deltaTime) {
+    if (glm::distance(colors[0].currentColor, colors[0].targetColor) < 0.1f) {
+        for (int i = 0; i < 4; i++) {
+            colors[i].startColor = colors[i].targetColor;
+            colors[i].targetColor = randomColor();
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        printVec(colors[i].currentColor);
+    }
+    for (int i = 0; i < 4; i++) {
+        colors[i].currentColor += (colors[i].targetColor - colors[i].startColor) / colorCycleTime * deltaTime;
+    }
+    if (abs(colors[0].currentColor[0]) > 1) {
+        colors[0].currentColor = colors[0].targetColor;
+    }
+    for (int i = 0; i < 4; i++) {
+        printVec(colors[i].currentColor);
+    }
 }
 
 // Returns true if there are no blocks between start and end
@@ -97,4 +132,5 @@ void Enemy::update(float deltaTime, const std::vector<bool> &worldData) {
                                          m_targetPosition.value().y,
                                          m_targetPosition.value().z) -
                                m_position);
+  updateColors(deltaTime);
 }

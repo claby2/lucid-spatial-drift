@@ -16,7 +16,7 @@ public:
 private:
   void drawTextureSquare(glm::vec3 enemyPosition, GLuint texture,
                          glm::vec3 cameraPos, glm::mat4 view,
-                         glm::mat4 projection);
+                         glm::mat4 projection, std::array<ColorPair, 4> colors);
   void spawnEnemy();
 
   int m_lastSpawnTime;

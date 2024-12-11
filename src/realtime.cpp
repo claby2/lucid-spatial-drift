@@ -102,6 +102,8 @@ void Realtime::initializeGL() {
   // Initializing GL.
   // GLEW (GL Extension Wrangler) provides access to OpenGL functions.
   glewExperimental = GL_TRUE;
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   GLenum err = glewInit();
   if (err != GLEW_OK) {
     std::cerr << "Error while initializing GL: " << glewGetErrorString(err)

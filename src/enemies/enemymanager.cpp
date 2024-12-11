@@ -75,9 +75,9 @@ void EnemyManager::spawnEnemy() {
 
 void EnemyManager::drawTextureSquare(glm::vec3 enemyPosition, GLuint texture,
                                      glm::vec3 cameraPos, glm::mat4 view,
-                                     glm::mat4 projection) {
+                                     glm::mat4 projection, std::array<ColorPair, 4> colors) {
   // Just make scale a constant for now
-  const glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+  const glm::vec3 scale = glm::vec3(2.0f, 2.0f, 2.0f);
 
   glUseProgram(m_shader);
   glBindVertexArray(m_squareVAO);
@@ -98,6 +98,12 @@ void EnemyManager::drawTextureSquare(glm::vec3 enemyPosition, GLuint texture,
                      glm::value_ptr(view));
   glUniformMatrix4fv(glGetUniformLocation(m_shader, "projectionMatrix"), 1,
                      GL_FALSE, glm::value_ptr(projection));
+
+  glUniform4fv(glGetUniformLocation(m_shader, "topLeftColor"), 1, &(colors[0].currentColor[0]));
+  glUniform4fv(glGetUniformLocation(m_shader, "topRightColor"), 1, &(colors[1].currentColor[0]));
+  glUniform4fv(glGetUniformLocation(m_shader, "bottomLeftColor"), 1, &(colors[2].currentColor[0]));
+  glUniform4fv(glGetUniformLocation(m_shader, "bottomRightColor"), 1, &(colors[3].currentColor[0]));
+
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
   glUniform1i(glGetUniformLocation(m_shader, "sampler"), 0);
@@ -112,6 +118,6 @@ void EnemyManager::render(glm::vec3 cameraPos, glm::mat4 view,
                           glm::mat4 projection) {
   for (const Enemy &e : m_enemies) {
     drawTextureSquare(e.getPosition(), m_enemyTextures[0], cameraPos, view,
-                      projection);
+                      projection, e.colors);
   }
 }
