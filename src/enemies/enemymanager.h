@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+int m_score = 0; // Global score variable
+
 class EnemyManager {
 public:
   EnemyManager() = default;

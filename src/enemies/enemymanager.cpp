@@ -49,6 +49,7 @@ void EnemyManager::update(float deltaTime, const std::vector<bool> &worldData,
                      [projectilePositions](const Enemy &e) {
                        for (const glm::vec3 &p : projectilePositions) {
                          if (glm::distance(e.getPosition(), p) < 1.0f) {
+                               m_score++;
                            return true;
                          }
                        }
