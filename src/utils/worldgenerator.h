@@ -13,6 +13,7 @@ public:
 
   void generate();
   RenderShapeData getShapeData() const;
+  std::vector<float>& getVertexData() { return m_vertexData; };
   void installVbo();
   void bindVao();
   void unbindVao();

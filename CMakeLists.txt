@@ -68,6 +68,8 @@ add_executable(${PROJECT_NAME}
     src/enemies/enemymanager.h
     src/enemies/enemy.h
     src/enemies/projectile.h
+    src/utils/collisiondetector.h src/utils/collisiondetector.cpp
+    src/utils/plane.h src/utils/plane.cpp
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
