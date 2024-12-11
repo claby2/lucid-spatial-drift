@@ -12,6 +12,7 @@ public:
   void generate();
   RenderShapeData getShapeData() const;
   std::vector<float>& getVertexData() { return m_vertexData; };
+  std::vector<bool>& getWorldData() { return worldData; };
   void installVbo();
   void bindVao();
   void unbindVao();
@@ -31,4 +32,5 @@ private:
   VboManager m_vbo;
 
   std::vector<float> m_vertexData;
+  std::vector<bool> worldData;
 };
